@@ -1,0 +1,27 @@
+[project]
+name = "jarvis"
+version = "0.1.0"
+description = "Read-only multi-agent trade-signal system"
+requires-python = ">=3.11"
+
+[dependency-groups]
+dev = ["mypy>=2.3.1"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+mypy_path = "src"
+files = ["src/jarvis"]
