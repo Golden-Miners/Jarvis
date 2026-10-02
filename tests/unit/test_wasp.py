@@ -31,7 +31,9 @@ def _trend_market_structure(direction: str = "UP", timeframe: str = "M15") -> Ma
     )
 
 
-def _triangle_wave(start_idx: int, count: int, period: int, center: float, amplitude: float) -> list[Candle]:
+def _triangle_wave(
+    start_idx: int, count: int, period: int, center: float, amplitude: float
+) -> list[Candle]:
     candles = []
     for i in range(count):
         phase = i % period

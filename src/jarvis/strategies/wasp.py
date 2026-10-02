@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime
-
 from jarvis.indicators import atr, fibonacci_retracements, price_zones, swings
 from jarvis.schemas import Candle, SetupCandidate
 from jarvis.strategies.base import BaseStrategy
@@ -144,7 +142,7 @@ class Wasp(BaseStrategy):
         touch_tolerance = atr_val * 0.2
         valid_conf = None
         for zone, ratio, level in confluences:
-            # We want price to have tested the zone (low <= upper) and closed above it (close > lower)
+            # We want price to test the zone (low <= upper) and close above (close > lower)
             if last.low <= zone.upper + touch_tolerance and last.close > zone.lower:
                 valid_conf = (zone, ratio, level)
                 break
@@ -200,7 +198,7 @@ class Wasp(BaseStrategy):
         touch_tolerance = atr_val * 0.2
         valid_conf = None
         for zone, ratio, level in confluences:
-            # We want price to have tested the zone (high >= lower) and closed below it (close < upper)
+            # We want price to test the zone (high >= lower) and close below (close < upper)
             if last.high >= zone.lower - touch_tolerance and last.close < zone.upper:
                 valid_conf = (zone, ratio, level)
                 break
@@ -268,7 +266,7 @@ class Wasp(BaseStrategy):
             try:
                 number = int(value)
             except ValueError:
-                raise ValueError(f"{field} must be a positive integer")
+                raise ValueError(f"{field} must be a positive integer") from None
         else:
             raise ValueError(f"{field} must be a positive integer")
         if number <= 0:
@@ -285,7 +283,7 @@ class Wasp(BaseStrategy):
             try:
                 number = float(value)
             except ValueError:
-                raise ValueError(f"{field} must be a positive number")
+                raise ValueError(f"{field} must be a positive number") from None
         else:
             raise ValueError(f"{field} must be a positive number")
         if number <= 0:
@@ -302,7 +300,7 @@ class Wasp(BaseStrategy):
             try:
                 number = float(value)
             except ValueError:
-                raise ValueError(f"{field} must be between {lower} and {upper}")
+                raise ValueError(f"{field} must be between {lower} and {upper}") from None
         else:
             raise ValueError(f"{field} must be between {lower} and {upper}")
         if not lower <= number <= upper:
