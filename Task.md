@@ -28,7 +28,7 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 - [x] T3.6 Wasp (supply-demand + Fib)
 
 ## Phase 4 — Instrument Agents & Graph (P0)
-- [ ] T4.1 Instrument base + 5 profiles (Iron Man, Captain America, Thor, Hulk, Black Panther)
+- [x] T4.1 Instrument base + 5 profiles (Iron Man, Captain America, Thor, Hulk, Black Panther)
 - [ ] T4.2 Instrument subgraph (Strange → strategies parallel → merge → War Machine)
 - [ ] T4.3 Main graph with fan-out per instrument + node error wrapper
 - [ ] T4.4 Jarvis supervisor scoring + rationale (LLM, schema-constrained) — *Verify:* integration test on MockProvider yields valid Signals
@@ -55,4 +55,4 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 - [ ] T8.4 2-week paper forward-test review → tune weights
 
 ## Current focus
-- Phase 4 → T4.1 Instrument base + 5 profiles
+- Phase 4 → T4.2 Instrument subgraph (Strange → strategies parallel → merge → War Machine)

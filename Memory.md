@@ -7,7 +7,8 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 - Phase: 3 · Task: T3.4 · Last updated: 2026-10-02
 - Phase: 3 · Task: T3.5 · Last updated: 2026-10-03
 - Phase: 3 · Task: T3.6 · Last updated: 2026-10-03
-- Phase: 4 · Task: T4.1 · IN_PROGRESS · Last updated: 2026-10-03
+- Phase: 4 · Task: T4.1 · Last updated: 2026-10-03
+- Phase: 4 · Task: T4.2 · IN_PROGRESS · Last updated: 2026-10-03
 - Environment: OS=Windows · Python=3.14.7 (uv project venv=3.14.5) · MT5 installed=yes · Broker symbols=standard/unchanged · Anthropic key location=C:\jarvis\.env (value not copied)
 
 ## Decisions log
@@ -88,6 +89,7 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 - 2026-10-03 · T3.4 DONE: Falcon breakout strategy verified; swing-high/low breakout with ATR-relative confidence; 4 tests added (bullish/bearish breakout, range reject, no-breakout guard); full suite 77 passed, Ruff/mypy clean. Earlier apparent flakiness was an artifact of pytest random ordering on a fresh session import; stable with `-p no:randomly` and randomised re-runs. Next: T3.5 Ant-Man.
 - 2026-10-03 · T3.5 DONE: Ant-Man mean reversion strategy created; triggers only in RANGE regime on overextension from EMA; tests added (including E501 line length fixes); full suite 90 passed, Ruff/mypy clean. Next: T3.6 Wasp.
 - 2026-10-03 · T3.6 DONE: Wasp supply-demand/Fib confluence strategy created; filters on confluent levels between historical price zones and Fib anchors; 9 tests added; full suite 99 passed, Ruff/mypy clean. Phase 3 completed. Next: Phase 4 (T4.1).
+- 2026-10-03 · T4.1 DONE: Created base Instrument agent and profiles (IronMan, CaptainAmerica, Thor, Hulk, BlackPanther) with initial config awareness (ATR multipliers) and 24/7 crypto overrides. Tested via 3 tests. Next: T4.2 Instrument subgraph.
 
 ## Open questions / UNVERIFIED items
 - Context7 health checks timed out twice on 2026-10-02 after a prior successful Connected status; installed state remains, latest health unverified.
@@ -97,4 +99,4 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 _(symptom · root cause · fix · test added)_
 
 ## Notes for next session
- Begin T4.1 Instrument base + 5 profiles (Iron Man, Captain America, Thor, Hulk, Black Panther) per Task.md.
+ Begin T4.2 Instrument subgraph (Strange → strategies parallel → merge → War Machine).
