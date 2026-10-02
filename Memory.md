@@ -93,15 +93,20 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 - 2026-10-03 · T4.2 DONE: Implemented instrument subgraph (`instrument_graph.py`), fixed LangGraph reducers to safely append scalar values to lists, and bound to Pydantic states.
 - 2026-10-03 · T4.3 DONE: Implemented main graph (`main_graph.py`) using `Send` API to dynamically route Vision output to parallel instrument subgraphs. Implemented global error boundary wrapper (`@safe_node`).
 - 2026-10-03 · T4.4 DONE: Implemented Jarvis supervisor logic (`jarvis.py`) with configurable scoring weights, min_score threshold, direction grouping, and mock-friendly structured rationale using Langchain. Integration test verified on MockProvider.
+- 2026-10-03 · T5.1 DONE: Implemented Nick Fury using Langchain Anthropic API to classify RSS feeds into `NewsImpact` and compute blackout windows. Tests added.
+- 2026-10-03 · T5.2 DONE: Implemented Quicksilver TimesFM forecasting using `timesfm` 3.0 API. Extracts median drift and calculates confidence strength vs ATR.
+- 2026-10-03 · T5.3 DONE: Wired both into graphs. Added Quicksilver to `instrument_graph.py` running after Doctor Strange. Added Nick Fury to `main_graph.py` before instrument fan-out.
 
 ## Open questions / UNVERIFIED items
 - Context7 health checks timed out twice on 2026-10-02 after a prior successful Connected status; installed state remains, latest health unverified.
-- News feed URLs live check
 
 ## Bugs & fixes
 - (Main graph) Mypy vs Numpy Stub errors: Python 3.11 mode failed on numpy 3.12 stubs. Fix: Bumping `tool.mypy.python_version` to "3.12".
 - (Instrument graph) LangGraph list reducers crashed when returning single items instead of lists. Fix: Update `merge_list` reducer in `state.py` to check `isinstance(right, list)`.
 - (Jarvis) Signal confidence schema was constrained to `le=1.0` but scoring allows values > 1.0. Fix: Dropped `le=1.0` constraint from `Signal` model.
+- (Quicksilver) `timesfm` import in mypy failed. Fix: ignored with `# type: ignore`.
+- (Quicksilver) TimesFM API changed in version 3.0. Fix: Updated to use `TimesFM_2p5_200M_torch.from_pretrained` and `configs.ForecastConfig`.
+- (Graph) Mypy struggled with `Callable[[SymbolState], dict[str, Any]]` as a node in `StateGraph.add_node`. Fix: simplified to `Any`.
 
 ## Notes for next session
-  Begin T5.1 Nick Fury: feeds, calendar, impact classification, blackout logic.
+  Begin Phase 6: Persistence, API, Scheduler (T6.1 SQLite store + Coulson outcome tracker).

@@ -35,8 +35,8 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 
 ## Phase 5 — News & Forecast (P1)
 - [x] T5.1 Nick Fury: feeds, calendar, impact classification, blackout logic
-- [ ] T5.2 Quicksilver: TimesFM loader + forecast → `Forecast`
-- [ ] T5.3 Wire both into graph + scoring weights
+- [x] T5.2 Quicksilver: TimesFM loader + forecast → `Forecast`
+- [x] T5.3 Wire both into graph + scoring weights
 
 ## Phase 6 — Persistence, API, Scheduler (P0/P1)
 - [ ] T6.1 SQLite store + Coulson outcome tracker (P1)
