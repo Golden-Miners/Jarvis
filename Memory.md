@@ -4,7 +4,7 @@
 JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news, 5 instruments, 5 strategies). Signals only, never executes. Supervisor = Jarvis.
 
 ## Current state
-- Phase: 1 · Task: T1.6 · Last updated: 2026-10-02
+- Phase: 2 · Task: T2.1 · Last updated: 2026-10-02
 - Environment: OS=Windows · Python=3.14.7 (uv project venv=3.14.5) · MT5 installed=yes · Broker symbols=standard/unchanged · Anthropic key location=C:\jarvis\.env (value not copied)
 
 ## Decisions log
@@ -70,6 +70,7 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 - 2026-10-02 · T1.3 DONE: added typed Candle/SymbolInfo/Tick, DataProvider Protocol, CSV MockProvider, and synthetic sample fixture. Pytest 19 passed; Ruff/mypy clean; no MT5/order API calls added. No real broker sample data was available. Next: T1.4.
 - 2026-10-02 · T1.4 DONE: read-only MT5 provider, UTC mapping/validation, atomic Parquet cache via PyArrow 25.0.1; pytest 28 passed, Ruff/mypy clean. Live XAUUSD M15 fetch succeeded and produced cache; removed the cache file after verification so market data is not retained. Next: T1.5.
 - 2026-10-02 · T1.5 DONE: added typed Vision result and provider-driven fetch for configured symbols/timeframes; pytest 32 passed, Ruff/mypy clean, execution/MT5 safety search clean. Next: T1.6.
+- 2026-10-02 · T1.6 DONE: added AST/token no-execution guard; scanner tests cover direct/import/dynamic violations and allowed MT5 reads. Full suite: 36 passed; Ruff/mypy clean; production audit found no forbidden APIs. Next: T2.1.
 
 ## Open questions / UNVERIFIED items
 - Context7 health checks timed out twice on 2026-10-02 after a prior successful Connected status; installed state remains, latest health unverified.
@@ -79,4 +80,4 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 _(symptom · root cause · fix · test added)_
 
 ## Notes for next session
-Begin T1.6 no-execution safety test per Task.md.
+Begin T2.1 indicators per Task.md.
