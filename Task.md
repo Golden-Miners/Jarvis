@@ -21,11 +21,11 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 
 ## Phase 3 — Strategy Agents (P0) *(parallelisable)*
 - [x] T3.1 BaseStrategy + registry — *Verify:* pytest, Ruff, strict mypy, and no-execution safety tests pass
-- [ ] T3.2 Hawkeye (SMC/ICT)
-- [ ] T3.3 Black Widow (trend-pullback)
-- [ ] T3.4 Falcon (breakout)
-- [ ] T3.5 Ant-Man (mean reversion)
-- [ ] T3.6 Wasp (supply-demand + Fib)
+- [x] T3.2 Hawkeye (SMC/ICT) — *Verify:* pytest, Ruff, strict mypy, and no-execution safety tests pass
+- [x] T3.3 Black Widow (trend-pullback)
+- [x] T3.4 Falcon (breakout)
+- [x] T3.5 Ant-Man (mean reversion)
+- [x] T3.6 Wasp (supply-demand + Fib)
 
 ## Phase 4 — Instrument Agents & Graph (P0)
 - [ ] T4.1 Instrument base + 5 profiles (Iron Man, Captain America, Thor, Hulk, Black Panther)
@@ -55,4 +55,4 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 - [ ] T8.4 2-week paper forward-test review → tune weights
 
 ## Current focus
-Phase 2 → T2.1 Indicators (ATR, EMA, swings, BOS/CHoCH, FVG, order block, zones, Fib) (see Memory.md)
+- Phase 4 → T4.1 Instrument base + 5 profiles

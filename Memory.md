@@ -4,7 +4,10 @@
 JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news, 5 instruments, 5 strategies). Signals only, never executes. Supervisor = Jarvis.
 
 ## Current state
-- Phase: 3 · Task: T3.2 · Last updated: 2026-10-02
+- Phase: 3 · Task: T3.4 · Last updated: 2026-10-02
+- Phase: 3 · Task: T3.5 · Last updated: 2026-10-03
+- Phase: 3 · Task: T3.6 · Last updated: 2026-10-03
+- Phase: 4 · Task: T4.1 · IN_PROGRESS · Last updated: 2026-10-03
 - Environment: OS=Windows · Python=3.14.7 (uv project venv=3.14.5) · MT5 installed=yes · Broker symbols=standard/unchanged · Anthropic key location=C:\jarvis\.env (value not copied)
 
 ## Decisions log
@@ -20,6 +23,7 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 | 2026-10-02 | T2.2 trend uses close vs configurable EMA; volatility regime uses configurable rolling ATR rank cutoffs; UTC session requires explicit configured windows or returns UNKNOWN | Project docs/config do not define trend/session/regime formulas or session hours |
 | 2026-10-02 | T2.3 sizing requires explicit equity, ATR, and broker SymbolInfo/Tick; lot size derives from broker tick value/size and floors to volume step; below-minimum lots invalidate rather than exceed risk | Docs require risk sizing but do not specify sizing formula, ATR bounds, or spread cap |
 | 2026-10-02 | T3.1 strategy implementations are explicitly registered by canonical config ID; registry passes params and excludes disabled entries without import-time discovery | Keeps loading deterministic and avoids hidden plugins/side effects |
+| 2026-10-02 | T3.3 Black Widow implemented: EMA trend filter + pullback detection + opposite-bar close entry, SL beyond pullback extreme, TP at configurable RR multiple | Matches Hawkeye recorded-fixture test convention
 | 2026-10-02 | T2.1 indicator conventions: Wilder ATR, first-value-seeded EMA, strict left/right swing pivots, close-cross BOS/CHoCH, three-candle FVG, opposite-candle displacement order block, tolerance-clustered zones, explicit-anchor Fib | Docs name indicators but do not specify formulas; conventions are implementation assumptions |
 
 ## Installed resources (name · source · version · date)
@@ -80,6 +84,10 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 - 2026-10-02 · T2.2 DONE: implemented Doctor Strange MTF trend/ATR, primary structure and key levels, tie-aware ATR-rank volatility regime, and explicit UTC session windows. Full suite 51 passed; Ruff/mypy clean; no-execution tests 4 passed. Conventions remain reviewable assumptions. Next: T2.3.
 - 2026-10-02 · T2.3 DONE: added pure War Machine directional RR/ATR/spread checks and risk-based lot sizing from explicit equity and broker tick/volume metadata. Full suite 61 passed; Ruff/mypy clean; no-execution tests 4 passed. ATR bounds/spread cap stay required settings; broker tick-value account semantics still require user/broker verification. Next: T3.1.
 - 2026-10-02 · T3.1 DONE: added frozen typed StrategyContext, abstract BaseStrategy, and explicit config-driven registry. Full suite 67 passed; Ruff and strict mypy clean; no-execution tests passed. Strategy implementations remain T3.2–T3.6. Next: T3.2.
+- 2026-10-02 · T3.2 DONE: Hawkeye SMC/ICT strategy created with FVG/order-block entry logic and validation; full suite 69 passed, Ruff and strict mypy clean. Next: T3.3 black widow.
+- 2026-10-03 · T3.4 DONE: Falcon breakout strategy verified; swing-high/low breakout with ATR-relative confidence; 4 tests added (bullish/bearish breakout, range reject, no-breakout guard); full suite 77 passed, Ruff/mypy clean. Earlier apparent flakiness was an artifact of pytest random ordering on a fresh session import; stable with `-p no:randomly` and randomised re-runs. Next: T3.5 Ant-Man.
+- 2026-10-03 · T3.5 DONE: Ant-Man mean reversion strategy created; triggers only in RANGE regime on overextension from EMA; tests added (including E501 line length fixes); full suite 90 passed, Ruff/mypy clean. Next: T3.6 Wasp.
+- 2026-10-03 · T3.6 DONE: Wasp supply-demand/Fib confluence strategy created; filters on confluent levels between historical price zones and Fib anchors; 9 tests added; full suite 99 passed, Ruff/mypy clean. Phase 3 completed. Next: Phase 4 (T4.1).
 
 ## Open questions / UNVERIFIED items
 - Context7 health checks timed out twice on 2026-10-02 after a prior successful Connected status; installed state remains, latest health unverified.
@@ -89,4 +97,4 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 _(symptom · root cause · fix · test added)_
 
 ## Notes for next session
- Begin T3.2 Hawkeye (SMC/ICT) per Task.md; T2.1/T2.2 formulas and broker tick-value account semantics remain reviewable assumptions.
+ Begin T4.1 Instrument base + 5 profiles (Iron Man, Captain America, Thor, Hulk, Black Panther) per Task.md.
