@@ -36,6 +36,10 @@ class JarvisConfig(ConfigModel):
     minimum_rr: float = Field(gt=0)
     min_agreeing_strategies: int = Field(ge=1)
     risk_percent: float = Field(gt=0, le=100)
+    w_strategy: float = Field(default=1.0, ge=0)
+    w_structure: float = Field(default=0.5, ge=0)
+    w_forecast: float = Field(default=0.3, ge=0)
+    w_news: float = Field(default=0.2, ge=0)
     cycle_interval_seconds: int = Field(gt=0)
 
 

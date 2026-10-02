@@ -19,7 +19,7 @@ class AgentError(TypedDict):
     timestamp: datetime
 
 
-def merge_list(left: list | None, right: list | Any | None) -> list:
+def merge_list(left: list[Any] | None, right: list[Any] | Any | None) -> list[Any]:
     """Reducer for lists."""
     if left is None:
         if right is None:
@@ -30,7 +30,7 @@ def merge_list(left: list | None, right: list | Any | None) -> list:
     return left + (right if isinstance(right, list) else [right])
 
 
-def merge_dict(left: dict | None, right: dict | None) -> dict:
+def merge_dict(left: dict[Any, Any] | None, right: dict[Any, Any] | None) -> dict[Any, Any]:
     """Reducer for dicts."""
     if left is None:
         return right or {}
@@ -47,6 +47,8 @@ class SymbolState(TypedDict, total=False):
     forecast: Forecast | None
     candidates: Annotated[list[SetupCandidate], merge_list]
     risk_assessments: Annotated[dict[str, RiskAssessment], merge_dict]
+    _tick: Any
+    _symbol_info: Any
 
 
 class JarvisState(TypedDict, total=False):

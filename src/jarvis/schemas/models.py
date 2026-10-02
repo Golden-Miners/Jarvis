@@ -75,7 +75,7 @@ class Signal(BaseModel):
     sl: float | None = None
     tp: float | None = None
     rr: float | None = None
-    confidence: float = Field(ge=0.0, le=1.0)
+    confidence: float = Field(ge=0.0)
     score_breakdown: dict[str, float]
     agent_verdicts: dict[str, str]
     rationale: str
