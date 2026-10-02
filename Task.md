@@ -7,7 +7,7 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 - [x] T0.3 Create CLAUDE.md pointer (≤30 lines) — *Verify:* existing 5-line file links Memory.md, Task.md, Architecture.md, Design.md, PRD.md, and Rules.md
 
 ## Phase 1 — Core Contracts & Data (P0)
-- [ ] T1.1 Pydantic schemas + unit tests
+- [x] T1.1 Pydantic schemas + unit tests — *Verify:* pytest, Ruff, and strict mypy pass
 - [ ] T1.2 Config loaders (instruments/strategies/jarvis YAML)
 - [ ] T1.3 DataProvider interface + MockProvider + fixtures (record sample candles)
 - [ ] T1.4 MT5Provider (read-only) + cache + data validation — *Verify:* fetches XAUUSD M15 on user's machine
@@ -55,4 +55,4 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 - [ ] T8.4 2-week paper forward-test review → tune weights
 
 ## Current focus
-Phase 1 → T1.1 Pydantic schemas + unit tests (see Memory.md)
+Phase 1 → T1.2 Config loaders (instruments/strategies/jarvis YAML) (see Memory.md)
