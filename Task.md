@@ -11,7 +11,7 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 - [x] T1.2 Config loaders (instruments/strategies/jarvis YAML) — *Verify:* pytest, Ruff, and strict mypy pass
 - [x] T1.3 DataProvider interface + MockProvider + fixtures (sample fixture explicitly synthetic) — *Verify:* pytest, Ruff, strict mypy pass
 - [x] T1.4 MT5Provider (read-only) + cache + data validation — *Verify:* live XAUUSD M15 fetch/cache created successfully; parquet artifact removed after verification to avoid retaining market data
-- [ ] T1.5 Vision agent
+- [x] T1.5 Vision agent — *Verify:* pytest, Ruff, strict mypy, and safety search pass
 - [ ] T1.6 No-execution safety test
 
 ## Phase 2 — Analysis Engine (P0)
@@ -55,4 +55,4 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 - [ ] T8.4 2-week paper forward-test review → tune weights
 
 ## Current focus
-Phase 1 → T1.5 Vision agent (see Memory.md)
+Phase 1 → T1.6 No-execution safety test (see Memory.md)

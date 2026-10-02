@@ -142,3 +142,14 @@ class Tick(BaseModel):
         if self.ask < self.bid:
             raise ValueError("ask must be at least bid")
         return self
+
+
+class InstrumentMarketData(BaseModel):
+    symbol: str
+    candles: dict[str, list[Candle]]
+    symbol_info: SymbolInfo
+    tick: Tick
+
+
+class VisionResult(BaseModel):
+    instruments: dict[str, InstrumentMarketData]

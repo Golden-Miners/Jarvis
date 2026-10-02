@@ -5,6 +5,7 @@ from jarvis.schemas.models import (
     Direction,
     Forecast,
     ForecastDirection,
+    InstrumentMarketData,
     MarketStructure,
     NewsImpact,
     RiskAssessment,
@@ -14,6 +15,7 @@ from jarvis.schemas.models import (
     SymbolInfo,
     Tick,
     Trend,
+    VisionResult,
     VolatilityRegime,
 )
 
@@ -24,6 +26,7 @@ __all__ = [
     "Direction",
     "Forecast",
     "ForecastDirection",
+    "InstrumentMarketData",
     "MarketStructure",
     "NewsImpact",
     "RiskAssessment",
@@ -33,5 +36,6 @@ __all__ = [
     "SymbolInfo",
     "Tick",
     "Trend",
+    "VisionResult",
     "VolatilityRegime",
 ]
