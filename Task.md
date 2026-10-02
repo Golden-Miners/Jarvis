@@ -20,7 +20,7 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 - [x] T2.3 War Machine (RR, ATR bounds, spread, lot suggestion) — *Verify:* pytest, Ruff, strict mypy, and no-execution safety tests pass
 
 ## Phase 3 — Strategy Agents (P0) *(parallelisable)*
-- [ ] T3.1 BaseStrategy + registry
+- [x] T3.1 BaseStrategy + registry — *Verify:* pytest, Ruff, strict mypy, and no-execution safety tests pass
 - [ ] T3.2 Hawkeye (SMC/ICT)
 - [ ] T3.3 Black Widow (trend-pullback)
 - [ ] T3.4 Falcon (breakout)
