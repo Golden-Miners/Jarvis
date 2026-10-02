@@ -61,3 +61,15 @@ class DoctorStrangeSettings(ConfigModel):
         if self.low_volatility_percentile >= self.high_volatility_percentile:
             raise ValueError("low volatility percentile must be below high percentile")
         return self
+
+
+class RiskSettings(ConfigModel):
+    minimum_sl_atr_multiple: float = Field(gt=0)
+    maximum_sl_atr_multiple: float = Field(gt=0)
+    maximum_spread_points: float = Field(ge=0)
+
+    @model_validator(mode="after")
+    def validate_sl_bounds(self) -> "RiskSettings":
+        if self.maximum_sl_atr_multiple < self.minimum_sl_atr_multiple:
+            raise ValueError("maximum SL ATR multiple must be >= minimum")
+        return self
