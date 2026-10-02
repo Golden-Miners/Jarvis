@@ -4,7 +4,7 @@
 JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news, 5 instruments, 5 strategies). Signals only, never executes. Supervisor = Jarvis.
 
 ## Current state
-- Phase: 1 · Task: T1.4 · Last updated: 2026-10-02
+- Phase: 1 · Task: T1.4 (BLOCKED: live XAUUSD M15 verification) · Last updated: 2026-10-02
 - Environment: OS=Windows · Python=3.14.7 (uv project venv=3.14.5) · MT5 installed=yes · Broker symbols=standard/unchanged · Anthropic key location=C:\jarvis\.env (value not copied)
 
 ## Decisions log
@@ -14,6 +14,7 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 | — | Fan-out per instrument via LangGraph subgraphs | Parallel, isolated failures |
 | 2026-10-02 | T1.2 defaults for sessions, ATR multipliers, strategy weights, score threshold, risk %, and cycle interval are provisional | Architecture/PRD do not specify these values |
 | 2026-10-02 | T1.3 provider returns typed Candle/SymbolInfo/Tick models; fixture is synthetic, explicitly not recorded broker data; mock symbol info/tick must be injected | No broker sample or return shapes provided in Architecture.md |
+| 2026-10-02 | T1.4 uses PyArrow-backed Parquet cache and fake MT5 API tests; live XAUUSD M15 verification is pending because no terminal is available | Parquet engine absent; `terminal_info()` returned None |
 
 ## Installed resources (name · source · version · date)
 - uv · pre-installed locally; source not verified · 0.11.15 · 2026-10-01
@@ -66,6 +67,7 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 - 2026-10-02 · T1.1 DONE: added six Architecture.md §5 Pydantic models and contract tests; pytest 7 passed, Ruff and strict mypy clean. Next: T1.2 config loaders.
 - 2026-10-02 · T1.2 DONE: added strict Pydantic config models, safe YAML loaders and three configs; pytest 13 passed, Ruff and strict mypy clean. Instrument sessions/ATR multipliers and strategy params are empty; weights and unspecified Jarvis score/risk/cycle defaults are provisional. Next: T1.3.
 - 2026-10-02 · T1.3 DONE: added typed Candle/SymbolInfo/Tick, DataProvider Protocol, CSV MockProvider, and synthetic sample fixture. Pytest 19 passed; Ruff/mypy clean; no MT5/order API calls added. No real broker sample data was available. Next: T1.4.
+- 2026-10-02 · T1.4 implementation verified with fake API: read-only MT5 provider, UTC candle mapping/validation, atomic per-symbol/timeframe Parquet cache using PyArrow 25.0.1; pytest 28 passed, Ruff/mypy clean. Live XAUUSD M15 verification remains BLOCKED: terminal unavailable (`terminal_info()` None); corrected command was canceled.
 
 ## Open questions / UNVERIFIED items
 - Context7 health checks timed out twice on 2026-10-02 after a prior successful Connected status; installed state remains, latest health unverified.
@@ -75,4 +77,4 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 _(symptom · root cause · fix · test added)_
 
 ## Notes for next session
-Begin T1.4 MT5Provider, cache, and data validation per Task.md; T1.3 sample fixture is synthetic, not recorded market data.
+T1.4 code is committed/ready but blocked pending a live XAUUSD M15 fetch with the user's MT5 terminal; then resume T1.4 verification before T1.5.

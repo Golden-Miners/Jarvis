@@ -18,7 +18,9 @@ class MockProvider:
         self.symbol_info = symbol_info or {}
         self.ticks = ticks or {}
 
-    def get_candles(self, symbol: str, tf: str, n: int) -> list[Candle]:
+    def get_candles(
+        self, symbol: str, tf: str, n: int, broker_symbol: str | None = None
+    ) -> list[Candle]:
         """Read the newest n fixture candles in ascending timestamp order."""
         if n <= 0:
             raise ValueError("n must be positive")
@@ -28,14 +30,14 @@ class MockProvider:
         candles.sort(key=lambda candle: candle.timestamp)
         return candles[-n:]
 
-    def get_symbol_info(self, symbol: str) -> SymbolInfo:
+    def get_symbol_info(self, symbol: str, broker_symbol: str | None = None) -> SymbolInfo:
         """Return injected metadata or raise when it was not supplied."""
         try:
             return self.symbol_info[symbol]
         except KeyError as exc:
             raise KeyError(f"No symbol info supplied for {symbol}") from exc
 
-    def get_tick(self, symbol: str) -> Tick:
+    def get_tick(self, symbol: str, broker_symbol: str | None = None) -> Tick:
         """Return an injected tick or raise when it was not supplied."""
         try:
             return self.ticks[symbol]
