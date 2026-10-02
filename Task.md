@@ -34,7 +34,7 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 - [x] T4.4 Jarvis supervisor scoring + rationale (LLM, schema-constrained) — *Verify:* integration test on MockProvider yields valid Signals
 
 ## Phase 5 — News & Forecast (P1)
-- [ ] T5.1 Nick Fury: feeds, calendar, impact classification, blackout logic
+- [x] T5.1 Nick Fury: feeds, calendar, impact classification, blackout logic
 - [ ] T5.2 Quicksilver: TimesFM loader + forecast → `Forecast`
 - [ ] T5.3 Wire both into graph + scoring weights
 

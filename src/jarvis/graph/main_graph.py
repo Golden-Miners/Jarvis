@@ -105,7 +105,7 @@ def build_main_graph(
 
     for sym, sub in subgraphs.items():
         node_name = f"instrument_{sym}"
-        def make_subgraph_node(compiled_sub: Any = sub) -> Callable[[SymbolState], dict[str, Any]]:
+        def make_subgraph_node(compiled_sub: Any = sub) -> Any:
             def node(state: SymbolState) -> dict[str, Any]:
                 config = {
                     "configurable": {

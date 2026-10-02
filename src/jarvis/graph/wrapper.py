@@ -22,8 +22,10 @@ def safe_node(agent_name: str, symbol: str | None = None) -> Callable[[Callable[
                     # or it passes state and config. We can just use func.__code__.co_varnames
                     varnames = func.__code__.co_varnames
                     if "config" in varnames:
-                        return func(state, config, **kwargs)
-                return func(state, **kwargs)
+                        res: dict[str, Any] = func(state, config, **kwargs)
+                        return res
+                res2: dict[str, Any] = func(state, **kwargs)
+                return res2
             except Exception as e:
                 # Log or print exception traceback in real app
                 traceback.print_exc()

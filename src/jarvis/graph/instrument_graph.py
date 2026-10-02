@@ -18,6 +18,7 @@ from jarvis.graph.state import SymbolState
 from jarvis.schemas import SymbolInfo, Tick
 from jarvis.strategies.base import BaseStrategy
 from jarvis.strategies.context import StrategyContext
+from jarvis.graph.wrapper import safe_node
 from jarvis.strategies.registry import StrategyRegistry
 
 
@@ -51,15 +52,33 @@ def build_instrument_subgraph(
 
         ms = run_strange(
             instrument=instrument,
-            candles_by_timeframe=state["candles"],
+            candles_by_timeframe=state["candles"], # type: ignore
             settings=doctor_settings,
             session_windows=session_windows,
             now=latest_ts,
         )
         return {"market_structure": ms}
 
+    @safe_node("Quicksilver")
+    def quicksilver_node(state: SymbolState) -> dict[str, Any]:
+        from jarvis.agents.quicksilver import run_quicksilver, QuicksilverSettings
+        tf = doctor_settings.primary_timeframe
+        candles_list = list(state["candles"].get(tf, []))
+        ms = state.get("market_structure")
+        atr = ms.atr.get(tf, 0.0) if ms and hasattr(ms, "atr") else 0.0
+        
+        forecast = run_quicksilver(
+            symbol=state["symbol"],
+            timeframe=tf,
+            candles=candles_list,
+            atr=atr,
+            settings=QuicksilverSettings()
+        )
+        return {"forecast": forecast}
+
     builder = StateGraph(SymbolState)
     builder.add_node("doctor_strange", doctor_strange_node)
+    builder.add_node("quicksilver", quicksilver_node)
 
     def merge_node(state: SymbolState) -> dict[str, Any]:
         return {}
@@ -70,7 +89,7 @@ def build_instrument_subgraph(
         node_name = f"strategy_{strategy.name}"
         strategy_nodes.append(node_name)
 
-        def make_node(strat: BaseStrategy = strategy) -> Callable[[SymbolState], dict[str, Any]]:
+        def make_node(strat: BaseStrategy = strategy) -> Any:
             def node(state: SymbolState) -> dict[str, Any]:
                 latest_ts = max(
                     c[-1].timestamp for c in state["candles"].values() if c
@@ -126,8 +145,11 @@ def build_instrument_subgraph(
     builder.add_node("war_machine", war_machine_node)
     builder.add_edge("merge_strategies", "war_machine")
     
+    builder.add_edge("doctor_strange", "quicksilver")
+    builder.add_edge("quicksilver", "merge_strategies")
+    
     if not strategy_nodes:
-        builder.add_edge("doctor_strange", "merge_strategies")
+        pass
 
     builder.add_edge(START, "doctor_strange")
     builder.add_edge("war_machine", END)

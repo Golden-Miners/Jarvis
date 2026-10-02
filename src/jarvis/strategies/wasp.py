@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from typing import Any
 from jarvis.indicators import atr, fibonacci_retracements, price_zones, swings
 from jarvis.schemas import Candle, SetupCandidate
 from jarvis.strategies.base import BaseStrategy
@@ -104,7 +104,7 @@ class Wasp(BaseStrategy):
         return []
 
     def _find_anchors(
-        self, pts: list, trend: str
+        self, pts: list[Any], trend: str
     ) -> tuple[float | None, float | None]:
         """Find the absolute high and low of the recent swings to draw Fibs."""
         if not pts:
@@ -127,7 +127,7 @@ class Wasp(BaseStrategy):
         self,
         last: Candle,
         prev: Candle,
-        confluences: list,
+        confluences: list[Any],
         atr_val: float,
         rr_multiple: float,
         min_confidence: float,
@@ -183,7 +183,7 @@ class Wasp(BaseStrategy):
         self,
         last: Candle,
         prev: Candle,
-        confluences: list,
+        confluences: list[Any],
         atr_val: float,
         rr_multiple: float,
         min_confidence: float,
