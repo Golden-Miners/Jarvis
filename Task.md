@@ -4,7 +4,7 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 ## Phase 0 — Setup & Tooling (P0)
 - [x] T0.1 Init repo, uv, pyproject, folder structure, .gitignore, .env.example, ruff/mypy/pytest config — *Verify:* `uv run pytest`, Ruff, and mypy pass
 - [x] T0.2 Install & verify dev resources (Context7 MCP, frontend-design skill, optional Superpowers plugin; Python libs) and log versions in Memory.md — *Verify:* `pip list`/`claude mcp list`; frontend npm tree verified. Context7 was previously Connected; two latest health checks timed out (intermittent).
-- [ ] T0.3 Create CLAUDE.md pointer (≤30 lines) — *Verify:* file exists, links docs
+- [x] T0.3 Create CLAUDE.md pointer (≤30 lines) — *Verify:* existing 5-line file links Memory.md, Task.md, Architecture.md, Design.md, PRD.md, and Rules.md
 
 ## Phase 1 — Core Contracts & Data (P0)
 - [ ] T1.1 Pydantic schemas + unit tests
@@ -55,4 +55,4 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 - [ ] T8.4 2-week paper forward-test review → tune weights
 
 ## Current focus
-Phase 0 → T0.3 (see Memory.md)
+Phase 1 → T1.1 Pydantic schemas + unit tests (see Memory.md)

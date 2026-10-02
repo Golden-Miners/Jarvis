@@ -4,7 +4,7 @@
 JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news, 5 instruments, 5 strategies). Signals only, never executes. Supervisor = Jarvis.
 
 ## Current state
-- Phase: 0 · Task: T0.3 · Last updated: 2026-10-02
+- Phase: 1 · Task: T1.1 · Last updated: 2026-10-02
 - Environment: OS=Windows · Python=3.14.7 (uv project venv=3.14.5) · MT5 installed=yes · Broker symbols=standard/unchanged · Anthropic key location=C:\jarvis\.env (value not copied)
 
 ## Decisions log
@@ -60,6 +60,7 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 - 2026-10-01 · T0.1 DONE: scaffold/config created; pytest, Ruff, strict mypy passed; commit `df7527d`.
 - 2026-10-02 · T0.2 DONE: frontend installed with exact pins after extending npm fetch timeout; `npm ls --depth=0`, pytest (1 passed), Ruff, and mypy passed. Context7 was previously Connected; two latest health checks timed out (intermittent).
 - Frontend install root cause: slow Vite tarball fetch; `npm install --prefer-online --fetch-timeout=600000 --fetch-retries=1` completed successfully without changing versions.
+- 2026-10-02 · T0.3 DONE: existing 5-line `CLAUDE.md` pointer links required project documents; no change required. Next: Phase 1 T1.1 schemas and unit tests.
 
 ## Open questions / UNVERIFIED items
 - Context7 health checks timed out twice on 2026-10-02 after a prior successful Connected status; installed state remains, latest health unverified.
@@ -69,4 +70,4 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 _(symptom · root cause · fix · test added)_
 
 ## Notes for next session
-T0.2 is complete; T0.3 is next. Context7 health is intermittent and should be rechecked if needed.
+Phase 0 complete. Begin T1.1 after reading the relevant Architecture.md schema section; Context7 health is intermittent and should be rechecked if needed.
