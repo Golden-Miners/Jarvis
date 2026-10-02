@@ -15,7 +15,7 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 - [x] T1.6 No-execution safety test — *Verify:* scanner rejects forbidden APIs, permits read-only MT5 APIs, and production source audit is clean
 
 ## Phase 2 — Analysis Engine (P0)
-- [ ] T2.1 Indicators: ATR, EMA, swings, BOS/CHoCH, FVG, order block, zones, Fib (+tests)
+- [x] T2.1 Indicators: ATR, EMA, swings, BOS/CHoCH, FVG, order block, zones, Fib (+tests) — *Verify:* pytest, Ruff, strict mypy, and no-execution safety tests pass
 - [ ] T2.2 Doctor Strange (structure/MTF/session/volatility regime)
 - [ ] T2.3 War Machine (RR, ATR bounds, spread, lot suggestion)
 

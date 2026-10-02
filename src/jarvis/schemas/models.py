@@ -153,3 +153,45 @@ class InstrumentMarketData(BaseModel):
 
 class VisionResult(BaseModel):
     instruments: dict[str, InstrumentMarketData]
+
+
+class SwingPoint(BaseModel):
+    index: int = Field(ge=0)
+    timestamp: datetime
+    price: float = Field(gt=0)
+    kind: Literal["HIGH", "LOW"]
+
+
+class StructureBreak(BaseModel):
+    index: int = Field(ge=0)
+    timestamp: datetime
+    level: float = Field(gt=0)
+    direction: Literal["UP", "DOWN"]
+    kind: Literal["BOS", "CHOCH"]
+
+
+class FairValueGap(BaseModel):
+    start_index: int = Field(ge=0)
+    end_index: int = Field(ge=0)
+    lower: float = Field(gt=0)
+    upper: float = Field(gt=0)
+    direction: Literal["BULLISH", "BEARISH"]
+
+
+class OrderBlock(BaseModel):
+    index: int = Field(ge=0)
+    lower: float = Field(gt=0)
+    upper: float = Field(gt=0)
+    direction: Literal["BULLISH", "BEARISH"]
+
+
+class PriceZone(BaseModel):
+    lower: float = Field(gt=0)
+    upper: float = Field(gt=0)
+    level_count: int = Field(ge=1)
+
+
+class FibonacciLevels(BaseModel):
+    start_price: float = Field(gt=0)
+    end_price: float = Field(gt=0)
+    levels: dict[str, float]

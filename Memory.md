@@ -4,7 +4,7 @@
 JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news, 5 instruments, 5 strategies). Signals only, never executes. Supervisor = Jarvis.
 
 ## Current state
-- Phase: 2 · Task: T2.1 · Last updated: 2026-10-02
+- Phase: 2 · Task: T2.2 · Last updated: 2026-10-02
 - Environment: OS=Windows · Python=3.14.7 (uv project venv=3.14.5) · MT5 installed=yes · Broker symbols=standard/unchanged · Anthropic key location=C:\jarvis\.env (value not copied)
 
 ## Decisions log
@@ -16,6 +16,8 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 | 2026-10-02 | T1.3 provider returns typed Candle/SymbolInfo/Tick models; fixture is synthetic, explicitly not recorded broker data; mock symbol info/tick must be injected | No broker sample or return shapes provided in Architecture.md |
 | 2026-10-02 | T1.4 uses PyArrow-backed Parquet cache and fake MT5 API tests | Parquet engine absent before T1.4; added PyArrow |
 | 2026-10-02 | T1.5 Vision returns per-symbol typed info, tick, and candle lists keyed by timeframe; candle count supplied by caller | Architecture defines fetch/validate behavior but not the Vision result contract or request size |
+| 2026-10-02 | T2.1 implementations: Wilder ATR; EMA seeded at first value; strict swing pivots; close-cross BOS/CHoCH by prior trend; 3-candle wick FVG; opposite-color candle before displacement for order blocks; adjacent-price tolerance zones; Fib levels from explicit anchors | Project docs list indicators but do not specify formulas; implementations are deterministic conventions subject to later domain review |
+| 2026-10-02 | T2.1 indicator conventions: Wilder ATR, first-value-seeded EMA, strict left/right swing pivots, close-cross BOS/CHoCH, three-candle FVG, opposite-candle displacement order block, tolerance-clustered zones, explicit-anchor Fib | Docs name indicators but do not specify formulas; conventions are implementation assumptions |
 
 ## Installed resources (name · source · version · date)
 - uv · pre-installed locally; source not verified · 0.11.15 · 2026-10-01
@@ -71,6 +73,7 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 - 2026-10-02 · T1.4 DONE: read-only MT5 provider, UTC mapping/validation, atomic Parquet cache via PyArrow 25.0.1; pytest 28 passed, Ruff/mypy clean. Live XAUUSD M15 fetch succeeded and produced cache; removed the cache file after verification so market data is not retained. Next: T1.5.
 - 2026-10-02 · T1.5 DONE: added typed Vision result and provider-driven fetch for configured symbols/timeframes; pytest 32 passed, Ruff/mypy clean, execution/MT5 safety search clean. Next: T1.6.
 - 2026-10-02 · T1.6 DONE: added AST/token no-execution guard; scanner tests cover direct/import/dynamic violations and allowed MT5 reads. Full suite: 36 passed; Ruff/mypy clean; production audit found no forbidden APIs. Next: T2.1.
+- 2026-10-02 · T2.1 DONE: added typed indicator outputs and pure ATR, EMA, swings, BOS/CHoCH, FVG, order blocks, price zones, and Fibonacci retracements. Full suite 44 passed; Ruff/mypy clean; no-execution tests 4 passed. Formula conventions above remain subject to domain review. Next: T2.2.
 
 ## Open questions / UNVERIFIED items
 - Context7 health checks timed out twice on 2026-10-02 after a prior successful Connected status; installed state remains, latest health unverified.
@@ -80,4 +83,4 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 _(symptom · root cause · fix · test added)_
 
 ## Notes for next session
-Begin T2.1 indicators per Task.md.
+Begin T2.2 Doctor Strange per Task.md; review T2.1 structural conventions before production strategy use.
