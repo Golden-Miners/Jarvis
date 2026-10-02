@@ -8,7 +8,7 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 - Phase: 3 · Task: T3.5 · Last updated: 2026-10-03
 - Phase: 3 · Task: T3.6 · Last updated: 2026-10-03
 - Phase: 4 · Task: T4.1 · Last updated: 2026-10-03
-- Phase: 4 · Task: T4.2 · IN_PROGRESS · Last updated: 2026-10-03
+- Phase: 5 · Task: T5.1 · Last updated: 2026-10-03
 - Environment: OS=Windows · Python=3.14.7 (uv project venv=3.14.5) · MT5 installed=yes · Broker symbols=standard/unchanged · Anthropic key location=C:\jarvis\.env (value not copied)
 
 ## Decisions log
@@ -90,13 +90,18 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 - 2026-10-03 · T3.5 DONE: Ant-Man mean reversion strategy created; triggers only in RANGE regime on overextension from EMA; tests added (including E501 line length fixes); full suite 90 passed, Ruff/mypy clean. Next: T3.6 Wasp.
 - 2026-10-03 · T3.6 DONE: Wasp supply-demand/Fib confluence strategy created; filters on confluent levels between historical price zones and Fib anchors; 9 tests added; full suite 99 passed, Ruff/mypy clean. Phase 3 completed. Next: Phase 4 (T4.1).
 - 2026-10-03 · T4.1 DONE: Created base Instrument agent and profiles (IronMan, CaptainAmerica, Thor, Hulk, BlackPanther) with initial config awareness (ATR multipliers) and 24/7 crypto overrides. Tested via 3 tests. Next: T4.2 Instrument subgraph.
+- 2026-10-03 · T4.2 DONE: Implemented instrument subgraph (`instrument_graph.py`), fixed LangGraph reducers to safely append scalar values to lists, and bound to Pydantic states.
+- 2026-10-03 · T4.3 DONE: Implemented main graph (`main_graph.py`) using `Send` API to dynamically route Vision output to parallel instrument subgraphs. Implemented global error boundary wrapper (`@safe_node`).
+- 2026-10-03 · T4.4 DONE: Implemented Jarvis supervisor logic (`jarvis.py`) with configurable scoring weights, min_score threshold, direction grouping, and mock-friendly structured rationale using Langchain. Integration test verified on MockProvider.
 
 ## Open questions / UNVERIFIED items
 - Context7 health checks timed out twice on 2026-10-02 after a prior successful Connected status; installed state remains, latest health unverified.
 - News feed URLs live check
 
 ## Bugs & fixes
-_(symptom · root cause · fix · test added)_
+- (Main graph) Mypy vs Numpy Stub errors: Python 3.11 mode failed on numpy 3.12 stubs. Fix: Bumping `tool.mypy.python_version` to "3.12".
+- (Instrument graph) LangGraph list reducers crashed when returning single items instead of lists. Fix: Update `merge_list` reducer in `state.py` to check `isinstance(right, list)`.
+- (Jarvis) Signal confidence schema was constrained to `le=1.0` but scoring allows values > 1.0. Fix: Dropped `le=1.0` constraint from `Signal` model.
 
 ## Notes for next session
- Begin T4.2 Instrument subgraph (Strange → strategies parallel → merge → War Machine).
+  Begin T5.1 Nick Fury: feeds, calendar, impact classification, blackout logic.

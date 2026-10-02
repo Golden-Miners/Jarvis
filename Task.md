@@ -29,9 +29,9 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 
 ## Phase 4 — Instrument Agents & Graph (P0)
 - [x] T4.1 Instrument base + 5 profiles (Iron Man, Captain America, Thor, Hulk, Black Panther)
-- [ ] T4.2 Instrument subgraph (Strange → strategies parallel → merge → War Machine)
-- [ ] T4.3 Main graph with fan-out per instrument + node error wrapper
-- [ ] T4.4 Jarvis supervisor scoring + rationale (LLM, schema-constrained) — *Verify:* integration test on MockProvider yields valid Signals
+- [x] T4.2 Instrument subgraph (Strange → strategies parallel → merge → War Machine)
+- [x] T4.3 Main graph with fan-out per instrument + node error wrapper
+- [x] T4.4 Jarvis supervisor scoring + rationale (LLM, schema-constrained) — *Verify:* integration test on MockProvider yields valid Signals
 
 ## Phase 5 — News & Forecast (P1)
 - [ ] T5.1 Nick Fury: feeds, calendar, impact classification, blackout logic
@@ -55,4 +55,4 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 - [ ] T8.4 2-week paper forward-test review → tune weights
 
 ## Current focus
-- Phase 4 → T4.2 Instrument subgraph (Strange → strategies parallel → merge → War Machine)
+- Phase 5 → T5.1 Nick Fury: feeds, calendar, impact classification, blackout logic

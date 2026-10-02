@@ -74,9 +74,25 @@ def build_main_graph(
 
     builder.add_node("vision", vision_node)
 
+    from jarvis.agents.fury import run_fury, FurySettings
+    from langchain_anthropic import ChatAnthropic
+    import os
+    
     @safe_node("NickFury")
     def nick_fury_node(state: JarvisState) -> dict[str, Any]:
-        return {"news": []}
+        llm = None
+        api_key = os.environ.get("ANTHROPIC_API_KEY")
+        if api_key:
+            llm = ChatAnthropic(model="claude-3-haiku-20240307") # type: ignore
+        
+        symbols = list(state.get("symbols", {}).keys())
+        impacts = run_fury(state["now"], symbols, FurySettings(), llm=llm)
+        
+        news_list = []
+        for sym_impacts in impacts.values():
+            news_list.extend(sym_impacts)
+            
+        return {"news": news_list}
     
     builder.add_node("nick_fury", nick_fury_node)
 
