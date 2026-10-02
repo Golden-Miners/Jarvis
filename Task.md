@@ -16,7 +16,7 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 
 ## Phase 2 — Analysis Engine (P0)
 - [x] T2.1 Indicators: ATR, EMA, swings, BOS/CHoCH, FVG, order block, zones, Fib (+tests) — *Verify:* pytest, Ruff, strict mypy, and no-execution safety tests pass
-- [ ] T2.2 Doctor Strange (structure/MTF/session/volatility regime)
+- [x] T2.2 Doctor Strange (structure/MTF/session/volatility regime) — *Verify:* pytest, Ruff, strict mypy, and no-execution safety tests pass
 - [ ] T2.3 War Machine (RR, ATR bounds, spread, lot suggestion)
 
 ## Phase 3 — Strategy Agents (P0) *(parallelisable)*
