@@ -1,0 +1,21 @@
+strategies:
+  - name: hawkeye
+    enabled: true
+    weight: 1.0
+    params: {}
+  - name: black_widow
+    enabled: true
+    weight: 1.0
+    params: {}
+  - name: falcon
+    enabled: true
+    weight: 1.0
+    params: {}
+  - name: ant_man
+    enabled: true
+    weight: 1.0
+    params: {}
+  - name: wasp
+    enabled: true
+    weight: 1.0
+    params: {}

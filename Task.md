@@ -8,7 +8,7 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 
 ## Phase 1 — Core Contracts & Data (P0)
 - [x] T1.1 Pydantic schemas + unit tests — *Verify:* pytest, Ruff, and strict mypy pass
-- [ ] T1.2 Config loaders (instruments/strategies/jarvis YAML)
+- [x] T1.2 Config loaders (instruments/strategies/jarvis YAML) — *Verify:* pytest, Ruff, and strict mypy pass
 - [ ] T1.3 DataProvider interface + MockProvider + fixtures (record sample candles)
 - [ ] T1.4 MT5Provider (read-only) + cache + data validation — *Verify:* fetches XAUUSD M15 on user's machine
 - [ ] T1.5 Vision agent
@@ -55,4 +55,4 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 - [ ] T8.4 2-week paper forward-test review → tune weights
 
 ## Current focus
-Phase 1 → T1.2 Config loaders (instruments/strategies/jarvis YAML) (see Memory.md)
+Phase 1 → T1.3 DataProvider interface + MockProvider + fixtures (see Memory.md)

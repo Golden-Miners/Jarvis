@@ -1,0 +1,26 @@
+instruments:
+  - symbol: XAUUSD
+    broker_symbol: XAUUSD
+    agent: iron_man
+    sessions: []
+    atr_multipliers: {}
+  - symbol: XAGUSD
+    broker_symbol: XAGUSD
+    agent: captain_america
+    sessions: []
+    atr_multipliers: {}
+  - symbol: BTCUSD
+    broker_symbol: BTCUSD
+    agent: thor
+    sessions: []
+    atr_multipliers: {}
+  - symbol: ETHUSD
+    broker_symbol: ETHUSD
+    agent: hulk
+    sessions: []
+    atr_multipliers: {}
+  - symbol: USOUSD
+    broker_symbol: USOUSD
+    agent: black_panther
+    sessions: []
+    atr_multipliers: {}

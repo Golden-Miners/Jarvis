@@ -1,0 +1,5 @@
+min_score: 0.0
+minimum_rr: 1.5
+min_agreeing_strategies: 2
+risk_percent: 1.0
+cycle_interval_seconds: 900
