@@ -1,5 +1,6 @@
 from jarvis.schemas.models import (
     Bias,
+    Candle,
     Decision,
     Direction,
     Forecast,
@@ -10,12 +11,15 @@ from jarvis.schemas.models import (
     SetupCandidate,
     Signal,
     SignalStatus,
+    SymbolInfo,
+    Tick,
     Trend,
     VolatilityRegime,
 )
 
 __all__ = [
     "Bias",
+    "Candle",
     "Decision",
     "Direction",
     "Forecast",
@@ -26,6 +30,8 @@ __all__ = [
     "SetupCandidate",
     "Signal",
     "SignalStatus",
+    "SymbolInfo",
+    "Tick",
     "Trend",
     "VolatilityRegime",
 ]

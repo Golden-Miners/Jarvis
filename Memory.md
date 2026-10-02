@@ -4,7 +4,7 @@
 JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news, 5 instruments, 5 strategies). Signals only, never executes. Supervisor = Jarvis.
 
 ## Current state
-- Phase: 1 · Task: T1.3 · Last updated: 2026-10-02
+- Phase: 1 · Task: T1.4 · Last updated: 2026-10-02
 - Environment: OS=Windows · Python=3.14.7 (uv project venv=3.14.5) · MT5 installed=yes · Broker symbols=standard/unchanged · Anthropic key location=C:\jarvis\.env (value not copied)
 
 ## Decisions log
@@ -13,6 +13,7 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 | — | Deterministic math, LLM only for news + rationale | Cost, accuracy, no hallucinated prices |
 | — | Fan-out per instrument via LangGraph subgraphs | Parallel, isolated failures |
 | 2026-10-02 | T1.2 defaults for sessions, ATR multipliers, strategy weights, score threshold, risk %, and cycle interval are provisional | Architecture/PRD do not specify these values |
+| 2026-10-02 | T1.3 provider returns typed Candle/SymbolInfo/Tick models; fixture is synthetic, explicitly not recorded broker data; mock symbol info/tick must be injected | No broker sample or return shapes provided in Architecture.md |
 
 ## Installed resources (name · source · version · date)
 - uv · pre-installed locally; source not verified · 0.11.15 · 2026-10-01
@@ -64,6 +65,7 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 - 2026-10-02 · T0.3 DONE: existing 5-line `CLAUDE.md` pointer links required project documents; no change required. Next: Phase 1 T1.1 schemas and unit tests.
 - 2026-10-02 · T1.1 DONE: added six Architecture.md §5 Pydantic models and contract tests; pytest 7 passed, Ruff and strict mypy clean. Next: T1.2 config loaders.
 - 2026-10-02 · T1.2 DONE: added strict Pydantic config models, safe YAML loaders and three configs; pytest 13 passed, Ruff and strict mypy clean. Instrument sessions/ATR multipliers and strategy params are empty; weights and unspecified Jarvis score/risk/cycle defaults are provisional. Next: T1.3.
+- 2026-10-02 · T1.3 DONE: added typed Candle/SymbolInfo/Tick, DataProvider Protocol, CSV MockProvider, and synthetic sample fixture. Pytest 19 passed; Ruff/mypy clean; no MT5/order API calls added. No real broker sample data was available. Next: T1.4.
 
 ## Open questions / UNVERIFIED items
 - Context7 health checks timed out twice on 2026-10-02 after a prior successful Connected status; installed state remains, latest health unverified.
@@ -73,4 +75,4 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 _(symptom · root cause · fix · test added)_
 
 ## Notes for next session
-Begin T1.3 DataProvider interface, MockProvider, and fixtures per Task.md; config numeric defaults remain provisional pending user confirmation.
+Begin T1.4 MT5Provider, cache, and data validation per Task.md; T1.3 sample fixture is synthetic, not recorded market data.

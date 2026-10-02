@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 Direction = Literal["BUY", "SELL"]
 Decision = Literal["TRADE", "NO_TRADE"]
@@ -82,3 +82,63 @@ class Signal(BaseModel):
     status: SignalStatus
     created_at: datetime
     expires_at: datetime
+
+
+class Candle(BaseModel):
+    timestamp: datetime
+    open: float = Field(gt=0)
+    high: float = Field(gt=0)
+    low: float = Field(gt=0)
+    close: float = Field(gt=0)
+    volume: float = Field(ge=0)
+
+    @field_validator("timestamp")
+    @classmethod
+    def timestamp_is_utc(cls, value: datetime) -> datetime:
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError("timestamp must include a timezone")
+        return value.astimezone(UTC)
+
+    @model_validator(mode="after")
+    def validate_ohlc(self) -> "Candle":
+        if self.high < max(self.open, self.close, self.low):
+            raise ValueError("high must be at least open, close, and low")
+        if self.low > min(self.open, self.close, self.high):
+            raise ValueError("low must be at most open, close, and high")
+        return self
+
+
+class SymbolInfo(BaseModel):
+    symbol: str
+    digits: int = Field(ge=0)
+    point: float = Field(gt=0)
+    trade_tick_size: float = Field(gt=0)
+    trade_tick_value: float = Field(ge=0)
+    volume_min: float = Field(gt=0)
+    volume_max: float = Field(gt=0)
+    volume_step: float = Field(gt=0)
+
+    @model_validator(mode="after")
+    def validate_volume_range(self) -> "SymbolInfo":
+        if self.volume_max < self.volume_min:
+            raise ValueError("volume_max must be at least volume_min")
+        return self
+
+
+class Tick(BaseModel):
+    timestamp: datetime
+    bid: float = Field(gt=0)
+    ask: float = Field(gt=0)
+
+    @field_validator("timestamp")
+    @classmethod
+    def timestamp_is_utc(cls, value: datetime) -> datetime:
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError("timestamp must include a timezone")
+        return value.astimezone(UTC)
+
+    @model_validator(mode="after")
+    def validate_spread(self) -> "Tick":
+        if self.ask < self.bid:
+            raise ValueError("ask must be at least bid")
+        return self
