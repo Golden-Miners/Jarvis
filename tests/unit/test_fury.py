@@ -6,7 +6,8 @@ from jarvis.agents.fury import FuryOutput, FurySettings, NewsClassification, run
 
 def test_run_fury_empty_feed() -> None:
     now = datetime.now(UTC)
-    settings = FurySettings(rss_urls=[])
+    settings = FurySettings(rss_urls=["http://invalid.url.that.does.not.exist"])
+    # The feed parser will fail to parse, resulting in empty raw_news
     impacts = run_fury(now, ["XAUUSD"], settings, llm=None)
     assert "XAUUSD" in impacts
     assert len(impacts["XAUUSD"]) == 0

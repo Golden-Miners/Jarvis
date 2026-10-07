@@ -109,4 +109,8 @@ def test_run_jarvis_approves_trade(mock_jarvis_config: JarvisConfig) -> None:
     assert signal.direction == "BUY"
     assert signal.score == pytest.approx(2.25)
     assert signal.confidence == pytest.approx(1.0 - math.exp(-2.25))
-    assert signal.rationale == "Signal approved based on confluence."
+    # With llm=None, uses template fallback
+    assert "XAUUSD" in signal.rationale
+    assert "BUY" in signal.rationale
+    assert "2.25" in signal.rationale
+    assert "template fallback" in signal.rationale.lower()
