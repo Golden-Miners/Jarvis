@@ -1,0 +1,3 @@
+# LLM keyword fallback and template rationale when Anthropic is unavailable
+
+When the Anthropic API is unreachable or returns unusable output, news classification falls back to a deterministic keyword matcher and signal rationales fall back to template text, rather than blocking the cycle or skipping news entirely. This keeps cycles running deterministically during vendor outages and shares one code path with the F-102 guardrail plan: the same fallback is used when the LLM repeatedly fails schema validation. The trade-off — cruder classification and blander rationales during fallback — is accepted so the forward-test dataset has no cycle gaps attributable to a single vendor.

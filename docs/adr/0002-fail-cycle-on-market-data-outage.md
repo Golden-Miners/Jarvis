@@ -1,0 +1,3 @@
+# Fail the cycle on market-data outage rather than serve stale cache
+
+When MT5 market data is unavailable or fails validation, the cycle fails outright; Jarvis never generates signals from stale or cached candles. Considered and rejected: serving the last cached snapshot would keep the pipeline "green" during outages, but a signal computed on stale prices is worse than no signal — it looks actionable while describing a market that no longer exists. Cost of this decision: cycles during MT5 outages produce no signals and count toward the forward-test abort criterion (3+ consecutive failed cycles).

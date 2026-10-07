@@ -4,7 +4,7 @@
 JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news, 5 instruments, 5 strategies). Signals only, never executes. Supervisor = Jarvis.
 
 ## Current state
-- Phase: 8 · Task: T8.1 (grill/planning) · Last updated: 2026-10-07
+- Phase: 8 · Task: T8.0a green-baseline build loop · Last updated: 2026-10-07
 - Dashboard rebuild: Full shell, routing, auth, overview, signals, instruments, history, stats, agents, news, settings pages
 - Phase: 3 · Task: T3.3 · Last updated: 2026-10-02
 - Phase: 3 · Task: T3.4 · Last updated: 2026-10-03
@@ -37,6 +37,11 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 | 2026-10-02 | T3.1 strategy implementations are explicitly registered by canonical config ID; registry passes params and excludes disabled entries without import-time discovery | Keeps loading deterministic and avoids hidden plugins/side effects |
 | 2026-10-02 | T3.3 Black Widow implemented: EMA trend filter + pullback detection + opposite-bar close entry, SL beyond pullback extreme, TP at configurable RR multiple | Matches Hawkeye recorded-fixture test convention
 | 2026-10-02 | T2.1 indicator conventions: Wilder ATR, first-value-seeded EMA, strict left/right swing pivots, close-cross BOS/CHoCH, three-candle FVG, opposite-candle displacement order block, tolerance-clustered zones, explicit-anchor Fib | Docs name indicators but do not specify formulas; conventions are implementation assumptions |
+| 2026-10-07 | Phase 8 = one merged phase (grill confirmed): T8.0a green baseline → T8.0b guardrails (audit T3) → T8.1 degraded mode/wiring/F-117 drills → T8.2 backtest-lite → T8.3 ops (README/CI/CLI; Telegram P2 deferred) → T8.4 gated forward test | Audit fix-plan tiers merged; forward data from a broken/un-guardrailed tree is untrustworthy |
+| 2026-10-07 | min_agreeing_strategies production default = 2 | Consensus gate: single-strategy signals too noisy; restores test expectation; reverses live-demo relaxation |
+| 2026-10-07 | Kill switch halts NEW cycles only; open signals keep resolving via Coulson | Outcome dataset stays honest; nothing executes anyway |
+| 2026-10-07 | Degraded-mode contract: MT5 down → fail cycle (ADR-0002); Anthropic down → keyword fallback + template rationale (ADR-0001); RSS down → no news, cycle proceeds; TimesFM down → skip forecast; DB down → API 503, scheduler self-heals. Retry at system edges only (MT5/Anthropic/RSS/HTTP); structlog JSON stdout, level via env, set_cycle_id at cycle start; no log files/retention | Per-dependency contract; bounded cycle time; no stale-data signals |
+| 2026-10-07 | Forward test: 2 weeks M15, config frozen at start (ADR-0003), six hard pre-flight gates (green baseline, guardrails, drills, UTC offset verified, tick-value verified, formula review sign-off), abort on 3+ consecutive failed cycles or kill-switch trip; RSS-only news accepted with limitation noted | Gated protocol agreed during grill; metrics per strategy + instrument |
 
 ## Installed resources (name · source · version · date)
 - uv · pre-installed locally; source not verified · 0.11.15 · 2026-10-01
@@ -131,7 +136,7 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 - Indicator formula conventions (Wilder ATR, swing pivots, BOS/CHoCH close-cross, 3-candle FVG, opposite-candle OB, zone tolerance, explicit-anchor Fib) subject to domain review.
 - Session window times (London 07-16, NY 12-21, Asian 22-07, Crypto 24/7) are provisional; need broker/calendar verification.
 - Economic calendar feed: Not implemented (only ForexLive RSS used). Need to add free calendar source (e.g., ForexFactory, investing.com) for blackout logic.
-- min_agreeing_strategies: config/jarvis.yaml has 1 (relaxed for live XAUUSD demo, never restored) vs test_config_loaders expectation of 2 — production default decision needed.
+- RESOLVED 2026-10-07: min_agreeing_strategies = 2 (grill decision, see decisions log); config fix lands in T8.0a.
 
 ## Bugs & fixes
 - (Main graph) Mypy vs Numpy Stub errors: Python 3.11 mode failed on numpy 3.12 stubs. Fix: Bumping `tool.mypy.python_version` to "3.12".
