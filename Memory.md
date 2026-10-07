@@ -4,7 +4,7 @@
 JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news, 5 instruments, 5 strategies). Signals only, never executes. Supervisor = Jarvis.
 
 ## Current state
-- Phase: 8 · Task: T8.0b AI guardrails (BLOCKER) · Last updated: 2026-10-07
+- Phase: 8 · Task: T8.1 degraded mode + retry/logging wiring + F-117 failure drills · Last updated: 2026-10-07
 - Dashboard rebuild: Full shell, routing, auth, overview, signals, instruments, history, stats, agents, news, settings pages
 - Phase: 3 · Task: T3.3 · Last updated: 2026-10-02
 - Phase: 3 · Task: T3.4 · Last updated: 2026-10-03
@@ -43,6 +43,7 @@ JARVIS: LangGraph multi-agent trade-signal system (MT5 read-only, TimesFM, news,
 | 2026-10-07 | Degraded-mode contract: MT5 down → fail cycle (ADR-0002); Anthropic down → keyword fallback + template rationale (ADR-0001); RSS down → no news, cycle proceeds; TimesFM down → skip forecast; DB down → API 503, scheduler self-heals. Retry at system edges only (MT5/Anthropic/RSS/HTTP); structlog JSON stdout, level via env, set_cycle_id at cycle start; no log files/retention | Per-dependency contract; bounded cycle time; no stale-data signals |
 | 2026-10-07 | Forward test: 2 weeks M15, config frozen at start (ADR-0003), six hard pre-flight gates (green baseline, guardrails, drills, UTC offset verified, tick-value verified, formula review sign-off), abort on 3+ consecutive failed cycles or kill-switch trip; RSS-only news accepted with limitation noted | Gated protocol agreed during grill; metrics per strategy + instrument |
 | 2026-10-07 | T8.0a COMPLETE: green baseline restored — pytest 148 passed, ruff 0 errors, mypy strict 0 errors | min_agreeing_strategies=2, cycles.py build_main_graph wiring fixed, duplicate SSE routes removed, health/schemas typing fixed, retry/logging type fixes, pytest timeout 60s |
+| 2026-10-07 | T8.0b COMPLETE: AI guardrails implemented — schema-bound LLM outputs with Pydantic, bounded repair retry, deterministic keyword fallback for news + template rationale for signals, kill switch halts new cycles only, 24 test cases covering malformed output, repair path, fallback path, kill-switch trip | src/jarvis/guardrails/ (schemas.py, fallback.py, kill_switch.py), fury.py + jarvis.py wrapped, main_graph.py kill switch check |
 
 ## Installed resources (name · source · version · date)
 - uv · pre-installed locally; source not verified · 0.11.15 · 2026-10-01
