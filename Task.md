@@ -49,25 +49,25 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 - [x] T7.3 History + Stats views, SSE live updates, responsive polish — *Verify:* Tabs with Stats/History, SSE connection, dark/light theme, responsive grid layout
 
 ## Current focus
-- Phase 8 → T8.0a restore green baseline (Engineering-division build loop)
+- Phase 8 → T8.2 backtest-lite (dashboard COMPLETE) · Last updated: 2026-10-07
 
 ## Phase 8 — Hardening & Forward Test (P1)
 *Merged with docs/audit/FIX_PLAN.md tiers 3–8 (findings F-101..F-117). Sequential; T8.4 gated by six hard pre-flight checks. Build-loop gates: full pytest green, ruff 0, mypy strict 0, no-execution AST guard + auth tests green, functional demo (backtest-lite report + mocked-LLM cycle).*
 
-- [ ] **T8.0a Restore green baseline** — *Verify:* full pytest green, ruff 0, mypy strict 0
-  - [ ] min_agreeing_strategies config 1→2 (reverses live-demo relaxation; restores test_config_loaders)
-  - [ ] api/routes/cycles.py: fix build_main_graph() call (signature now takes 8 config args) → POST /cycles/run currently broken
-  - [ ] api/main.py: remove duplicate SSE routes; news.py: fix nonexistent NewsImpactModel.blackout_until; signals.py/news.py datetime-vs-str; stats.py typing; utils/retry.py ParamSpec; utils/logging.py contextvars
-  - [ ] Clear all ruff (73) and mypy (64) errors; raise pytest per-test timeout (cold pyarrow import >20s)
-- [ ] **T8.0b AI guardrails** (audit T3 BLOCKER, F-102/F-103) — *Verify:* guardrail suite green incl. AST no-execution guard
-  - [ ] Schema-bound LLM outputs (Pydantic) with bounded repair retry; deterministic keyword fallback for news + template rationale (ADR-0001)
-  - [ ] Kill switch: halts NEW cycles only; open signals keep resolving (Glossary semantics)
-  - [ ] Guardrail tests: malformed LLM output, repair path, fallback path, kill-switch trip
-- [ ] **T8.1 Degraded mode, retries, logging** (F-117) — *Verify:* failure-drill tests green; logs carry cycle_id
-  - [ ] Per-dependency contract: market-data outage fails cycle (ADR-0002); RSS down → no news; TimesFM down → skip forecast; DB down → API 503, scheduler self-heals
-  - [ ] Wire utils/retry.py at system edges (MT5, Anthropic, RSS, HTTP); no graph-node retries
-  - [ ] Wire structlog: set_cycle_id at cycle start; replace print() in api/main.py + scripts; JSON stdout, level via env
-  - [ ] Failure drills per dependency
+- [x] **T8.0a Restore green baseline** — *Verify:* full pytest green, ruff 0, mypy strict 0
+  - [x] min_agreeing_strategies config 1→2 (reverses live-demo relaxation; restores test_config_loaders)
+  - [x] api/routes/cycles.py: fix build_main_graph() call (signature now takes 8 config args) → POST /cycles/run currently broken
+  - [x] api/main.py: remove duplicate SSE routes; news.py: fix nonexistent NewsImpactModel.blackout_until; signals.py/news.py datetime-vs-str; stats.py typing; utils/retry.py ParamSpec; utils/logging.py contextvars
+  - [x] Clear all ruff (73) and mypy (64) errors; raise pytest per-test timeout (cold pyarrow import >20s)
+- [x] **T8.0b AI guardrails** (audit T3 BLOCKER, F-102/F-103) — *Verify:* guardrail suite green incl. AST no-execution guard
+  - [x] Schema-bound LLM outputs (Pydantic) with bounded repair retry; deterministic keyword fallback for news + template rationale (ADR-0001)
+  - [x] Kill switch: halts NEW cycles only; open signals keep resolving (Glossary semantics)
+  - [x] Guardrail tests: malformed LLM output, repair path, fallback path, kill-switch trip
+- [x] **T8.1 Degraded mode, retries, logging** (F-117) — *Verify:* failure-drill tests green; logs carry cycle_id
+  - [x] Per-dependency contract: market-data outage fails cycle (ADR-0002); RSS down → no news; TimesFM down → skip forecast; DB down → API 503, scheduler self-heals
+  - [x] Wire utils/retry.py at system edges (MT5, Anthropic, RSS, HTTP); no graph-node retries
+  - [x] Wire structlog: set_cycle_id at cycle start; replace print() in api/main.py + scripts; JSON stdout, level via env
+  - [x] Failure drills per dependency (14 tests)
 - [ ] **T8.2 Backtest-lite** (smoke grade, not statistical proof) — *Verify:* replay produces report; threshold tests green
   - [ ] Replay data/real_fixtures through full graph with mocked LLM; Coulson resolves outcomes post-hoc
   - [ ] docs/backtest/BACKTEST_LITE_<date>.md: per-strategy win rate / avg RR / expectancy vs thresholds; thresholds asserted in tests
