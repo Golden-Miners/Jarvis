@@ -1,0 +1,19 @@
+Constraints test execution on DB copy:
+FAIL: Inserted confidence > 1 (Missing CheckConstraint on confidence in SignalModel)
+PASS: Rejected duplicate OPEN signals: UNIQUE constraint failed: signals.symbol, signals.direction (ux_open_signal)
+PASS: Rejected NO_TRADE without reason: CHECK constraint failed: decision='TRADE' OR no_trade_reason IS NOT NULL
+PASS: Rejected TRADE without prices: CHECK constraint failed: decision='NO_TRADE' OR (direction IS NOT NULL AND entry IS NOT NULL AND sl IS NOT NULL AND tp IS NOT NULL)
+PASS: Rejected BUY with SL > entry: CHECK constraint failed: direction IS NULL OR (direction='BUY' AND sl<entry AND tp>entry) OR (direction='SELL' AND sl>entry AND tp<entry)
+
+Repository Layer violation test on agents:
+c:\jarvis\src\jarvis\agents\coulson.py:        session.add(row)
+
+Alembic migrations upgrade/downgrade cleanly:
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 338fff8ca8bc, Initial schema: all tables per Backend_Schema.md
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 338fff8ca8bc -> , Initial schema: all tables per Backend_Schema.md
+Upgrade successful
+Downgrade successful

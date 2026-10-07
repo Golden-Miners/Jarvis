@@ -1,0 +1,49 @@
+[PASS] unauthenticated gets 401
+Evidence:
+Status: 401, Body: {"detail":"Not authenticated"}
+
+[PASS] Login OWNER
+Evidence:
+Status: 200
+
+[PASS] Cookies HttpOnly
+Evidence:
+Cookies: ['access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJPV05FUiIsImV4cCI6MTc5MTIwODM1MywidHlwZSI6ImFjY2VzcyJ9.nrX0fZeKOUWmgzERz1vOH9pPFYFRov9GdovzdL2rgC0; HttpOnly; Max-Age=900; Path=/; SameSite=strict', 'refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJPV05FUiIsImV4cCI6MTc5MTgxMjI1MywidHlwZSI6InJlZnJlc2gifQ.oMHiv9Ui8mZij2PiOIRiNcrWl8ceNtCs8xActU_rgIs; HttpOnly; Max-Age=604800; Path=/; SameSite=strict']
+
+[PASS] Cookies SameSite
+Evidence:
+Cookies: ['access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJPV05FUiIsImV4cCI6MTc5MTIwODM1MywidHlwZSI6ImFjY2VzcyJ9.nrX0fZeKOUWmgzERz1vOH9pPFYFRov9GdovzdL2rgC0; HttpOnly; Max-Age=900; Path=/; SameSite=strict', 'refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJPV05FUiIsImV4cCI6MTc5MTgxMjI1MywidHlwZSI6InJlZnJlc2gifQ.oMHiv9Ui8mZij2PiOIRiNcrWl8ceNtCs8xActU_rgIs; HttpOnly; Max-Age=604800; Path=/; SameSite=strict']
+
+[FAIL] Login VIEWER
+Evidence:
+Status: 401
+
+[FAIL] VIEWER cannot POST /cycles/run
+Evidence:
+Status: 429, Body: {"error":{"code":"RATE_LIMITED","message":"Rate limit exceeded","request_id":"2026-10-05T13:37:37.652136+00:00"}}
+
+[PASS] VIEWER cannot PATCH config
+Evidence:
+Status: 404, Body: {"detail":"Not Found"}
+
+[PASS] Rate limits 1/min
+Evidence:
+Status 1: 429, Status 2: 429
+
+[FAIL] Lockout check
+Evidence:
+Status: 0, Body: timed out
+
+[FAIL] Lockout after 5 failed logins
+Evidence:
+Status: 0, Body: timed out
+
+[PASS] CORS allowlist
+Evidence:
+Allowed: 
+
+[FAIL] Error envelope and no stack traces
+Evidence:
+Body: timed out
+
+Counts: PASS=7 FAIL=5

@@ -1,0 +1,15 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.5, pytest-9.1.1, pluggy-1.6.0 -- C:\jarvis\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+Using --randomly-seed=3023226746
+rootdir: C:\jarvis
+configfile: pyproject.toml
+plugins: anyio-4.15.1, langsmith-0.14.2, cov-7.1.0, randomly-5.0.0
+collecting ... collected 4 items
+
+tests/test_no_execution.py::test_production_source_has_no_trade_execution_apis PASSED [ 25%]
+tests/test_no_execution.py::test_scanner_allows_read_only_mt5_apis PASSED [ 50%]
+tests/test_no_execution.py::test_scanner_rejects_dynamic_api_names PASSED [ 75%]
+tests/test_no_execution.py::test_scanner_rejects_direct_calls_and_imports PASSED [100%]
+
+============================= 4 passed in 52.87s ==============================

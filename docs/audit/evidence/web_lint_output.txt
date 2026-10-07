@@ -1,0 +1,118 @@
+
+> web@0.0.0 lint
+> oxlint
+
+
+  ! react-hooks(exhaustive-deps): React Hook useEffect has a missing dependency: 'setTheme'
+    ,-[src/hooks/useTheme.ts:35:6]
+ 29 |       if (e.key === 'theme' && (e.newValue === 'dark' || e.newValue === 'light')) {
+ 30 |         setTheme(e.newValue as Theme);
+    :         ^^^^|^^^
+    :             `-- useEffect uses `setTheme` here
+ 31 |       }
+ 32 |     };
+ 33 |     window.addEventListener('storage', handler);
+ 34 |     return () => window.removeEventListener('storage', handler);
+ 35 |   }, []);
+    :      ^^
+ 36 | 
+    `----
+  help: Either include it or remove the dependency array.
+
+  ! react(immutability): Cannot access variable while it is being initialized
+    ,-[src/hooks/useSSE.ts:72:9]
+ 71 |         if (unmountedRef.current) return;
+ 72 |         connect();
+    :         ^^^|^^^
+    :            `-- `connect` is read during its own initialization
+ 73 |       }, delay);
+    `----
+  help: `connect` is read while its declaration is still being initialized. Move the access after initialization. For a recursive callback, use a named function expression or restructure the callback so it does not capture itself during initialization
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(preserve-manual-memoization): Existing memoization could not be preserved
+    ,-[src/hooks/useSSE.ts:83:19]
+ 82 | 
+ 83 |   const connect = useCallback(() => {
+    :                   ^^^^^|^^^^^ |
+    :                        |      `-- Manual memoization callback starts here
+    :                        `-- Manual memoization is not preserved here
+ 84 |     if (unmountedRef.current) return;
+    `----
+  help: React Compiler could not prove that this useMemo/useCallback remains memoized. Fix related React Compiler errors inside the callback first. If manual memoization is not required for semantics, remove it; otherwise restructure the callback to avoid values that invalidate memoization
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/preserve-manual-memoization
+
+  ! react-hooks(exhaustive-deps): React Hook useCallback has a missing dependency: 'connect'
+    ,-[src/hooks/useSSE.ts:81:6]
+ 71 |         if (unmountedRef.current) return;
+ 72 |         connect();
+    :         ^^^|^^^
+    :            `-- useCallback uses `connect` here
+ 73 |       }, delay);
+ 74 | 
+ 75 |       if (!pollIntervalRef.current) {
+ 76 |         pollIntervalRef.current = setInterval(() => {
+ 77 |           if (document.visibilityState === 'visible') qc.invalidateQueries();
+ 78 |         }, POLL_FALLBACK_INTERVAL_MS);
+ 79 |       }
+ 80 |     });
+ 81 |   }, [invalidateRelated, qc]);
+    :      ^^^^^^^^^^^^^^^^^^^^^^^
+ 82 | 
+    `----
+  help: Either include it or remove the dependency array.
+
+  ! react(preserve-manual-memoization): Existing memoization could not be preserved
+     ,-[src/features/brief/OverviewPage.tsx:104:7]
+ 103 |     return text;
+ 104 |   }, [openSignals.length, waitingCount, nextEvent?.name, nextEventCountdown]);
+     :       ^^^^^|^^^^^
+     :            `-- This dependency may be modified later
+ 105 | 
+     `----
+  help: React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This dependency may be mutated later, which could cause the value to change unexpectedly
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/preserve-manual-memoization
+
+  ! react(purity): Cannot call impure function during render
+     ,-[src/features/brief/OverviewPage.tsx:183:97]
+ 182 |                 <div className="space-y-3 max-h-[300px] overflow-y-auto">
+ 183 |                   {newsItems.slice(0, 6).map((item) => <NewsItemRow key={item.id ?? item.url ?? Math.random()} item={item} />)}
+     :                                                                                                 ^^^^^^|^^^^^^
+     :                                                                                                       `-- Cannot call impure function
+ 184 |                 </div>
+     `----
+  help: `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(purity): Cannot call impure function during render
+    ,-[src/components/NewsItem.tsx:29:78]
+ 28 |   const config = biasConfig[news.bias as keyof typeof biasConfig];
+ 29 |   const hasBlackout = news.blackout_until && new Date(news.blackout_until) > new Date();
+    :                                                                              ^^^^^|^^^^
+    :                                                                                   `-- Cannot call impure function
+ 30 | 
+    `----
+  help: `Date` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(purity): Cannot call impure function during render
+    ,-[src/components/NewsItem.tsx:52:106]
+ 51 |           </span>
+ 52 |           <span className="text-[11px] text-[var(--muted)]">{formatTimeAgo(new Date(news.published_at || Date.now()))}</span>
+    :                                                                                                          ^^^^^|^^^^
+    :                                                                                                               `-- Cannot call impure function
+ 53 |         </div>
+    `----
+  help: `Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(only-export-components): Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.
+    ,-[src/app/AuthContext.tsx:74:17]
+ 73 | 
+ 74 | export function useAuth() {
+    :                 ^^^^^^^
+ 75 |   const ctx = useContext(AuthContext);
+    `----
+
+Found 9 warnings and 0 errors.
+Finished in 33.1s on 36 files with 116 rules using 2 threads.

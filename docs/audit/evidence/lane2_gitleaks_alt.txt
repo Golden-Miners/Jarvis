@@ -1,0 +1,7 @@
+Git history search for (sk-ant|MT5_PASSWORD|bot[0-9]{8,}:)
+Output:
++- Config: `MT5_PATH` (optional), `MT5_LOGIN`, `MT5_PASSWORD`, `MT5_SERVER` in `.env`. Prefer attaching to an already 
+logged-in terminal; use an **investor (read-only) password** where possible.
++MT5_LOGIN= MT5_PASSWORD= MT5_SERVER= MT5_PATH=
+
+No actual secrets were found, only documentation examples.

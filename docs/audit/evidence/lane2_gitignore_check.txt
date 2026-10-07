@@ -1,0 +1,7 @@
+> git check-ignore -v jarvis.db data/jarvis.db logs/app.log web/dist/index.html data/models/model.pt data/real_fixtures/fix.json
+.gitignore:25:data/	data/jarvis.db
+web/.gitignore:11:dist	web/dist/index.html
+.gitignore:25:data/	data/models/model.pt
+.gitignore:25:data/	data/real_fixtures/fix.json
+
+Notice that jarvis.db (root) and logs/app.log are missing from gitignore.

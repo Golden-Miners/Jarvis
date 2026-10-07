@@ -1,0 +1,3 @@
+Could not capture screenshots because Playwright `browser_navigate` permission timed out / failed.
+Visual layout responsiveness, horizontal scrolling, and a11y tests (axe-core) are UNVERIFIED or failed due to lack of browser execution.
+Backend also failed to start due to missing package installation.

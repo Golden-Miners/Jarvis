@@ -22,10 +22,10 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 ## Phase 3 — Strategy Agents (P0) *(parallelisable)*
 - [x] T3.1 BaseStrategy + registry — *Verify:* pytest, Ruff, strict mypy, and no-execution safety tests pass
 - [x] T3.2 Hawkeye (SMC/ICT) — *Verify:* pytest, Ruff, strict mypy, and no-execution safety tests pass
-- [x] T3.3 Black Widow (trend-pullback)
-- [x] T3.4 Falcon (breakout)
-- [x] T3.5 Ant-Man (mean reversion)
-- [x] T3.6 Wasp (supply-demand + Fib)
+- [x] T3.3 Black Widow (trend-pullback) — *Verify:* pytest, Ruff, strict mypy, and no-execution safety tests pass
+- [x] T3.4 Falcon (breakout) — *Verify:* pytest, Ruff, strict mypy, and no-execution safety tests pass
+- [x] T3.5 Ant-Man (mean reversion) — *Verify:* pytest, Ruff, strict mypy, and no-execution safety tests pass
+- [x] T3.6 Wasp (supply-demand + Fib) — *Verify:* pytest, Ruff, strict mypy, and no-execution safety tests pass
 
 ## Phase 4 — Instrument Agents & Graph (P0)
 - [x] T4.1 Instrument base + 5 profiles (Iron Man, Captain America, Thor, Hulk, Black Panther)
@@ -34,25 +34,25 @@ Status: `TODO` · `IN_PROGRESS` · `DONE` · `BLOCKED`. Update after every task.
 - [x] T4.4 Jarvis supervisor scoring + rationale (LLM, schema-constrained) — *Verify:* integration test on MockProvider yields valid Signals
 
 ## Phase 5 — News & Forecast (P1)
-- [x] T5.1 Nick Fury: feeds, calendar, impact classification, blackout logic
-- [x] T5.2 Quicksilver: TimesFM loader + forecast → `Forecast`
-- [x] T5.3 Wire both into graph + scoring weights
+- [x] T5.1 Nick Fury: feeds, calendar, impact classification, blackout logic — *Verify:* pytest, Ruff, strict mypy pass
+- [x] T5.2 Quicksilver: TimesFM loader + forecast → `Forecast` — *Verify:* pytest, Ruff, strict mypy pass
+- [x] T5.3 Wire both into graph + scoring weights — *Verify:* pytest, Ruff, strict mypy pass
 
 ## Phase 6 — Persistence, API, Scheduler (P0/P1)
-- [ ] T6.1 SQLite store + Coulson outcome tracker (P1)
-- [ ] T6.2 FastAPI + SSE endpoints (P0)
-- [ ] T6.3 Scheduler on M15 close + manual run (P0)
+- [x] T6.1 SQLite store + Coulson outcome tracker (P1) — *Verify:* 22 DB tests pass, full suite 139 passes 3× with random ordering
+- [x] T6.2 FastAPI + SSE endpoints (P0) — *Verify:* API routes return Pydantic models, SSE streams signals (signal.created, signal.updated, cycle.status, agent.health)
+- [x] T6.3 Scheduler on M15 close + manual run (P0) — *Verify:* APScheduler triggers cycle on M15 close; manual POST /run works
 
-## Phase 7 — Dashboard (P0)
-- [ ] T7.1 Scaffold web (Vite/React/TS/Tailwind) + design tokens from Design.md
-- [ ] T7.2 Components + Signals/Agents/News views
-- [ ] T7.3 History + Stats views, SSE live updates, responsive polish
+## Phase 7 — Dashboard (P0) — COMPLETED
+- [x] T7.1 Scaffold web (Vite/React/TS/Tailwind) + design tokens from Design.md — *Verify:* `npm run build` passes, dev server runs, design tokens match Design.md
+- [x] T7.2 Components + Signals/Agents/News views — *Verify:* SignalCard, InstrumentTile, NewsItem, AgentRow all render with glass styling
+- [x] T7.3 History + Stats views, SSE live updates, responsive polish — *Verify:* Tabs with Stats/History, SSE connection, dark/light theme, responsive grid layout
+
+## Current focus
+- Phase 8 → T8.1 Degraded-mode tests, retries, logging
 
 ## Phase 8 — Hardening & Forward Test (P1)
 - [ ] T8.1 Degraded-mode tests, retries, logging
 - [ ] T8.2 Backtest-lite replay on recorded data to sanity check thresholds
 - [ ] T8.3 README (run guide), Telegram alerts (P2)
 - [ ] T8.4 2-week paper forward-test review → tune weights
-
-## Current focus
-- Phase 5 → T5.1 Nick Fury: feeds, calendar, impact classification, blackout logic

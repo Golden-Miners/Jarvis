@@ -1,0 +1,73 @@
+=== API Lane 7 Audit ===
+[PASS] Login as OWNER successful
+Evidence:
+Status: 200, Body: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJPV05FUiIsImV4cCI6MTc5MTIwODI4MywidHlwZSI6ImFjY2VzcyJ9.XhKPnnwEXJOdQiGscs_Wi_4Xl4fijT1BjSzwWzco3eU","refresh_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJPV05FUiIsImV4cCI6MTc5MTgxMjE4MywidHlwZSI6InJlZnJlc2gifQ.2itWoroud3gmkZ73rYGpp3wREfrY8Q0vHFmAy5Z1Q3A","token_type":"bearer","expires_in":900}
+
+[PASS] unauthenticated gets 401 for /signals
+Evidence:
+Status: 401, Body: {"detail":"Not authenticated"}
+
+[PASS] Server binds to 127.0.0.1
+Evidence:
+curl to 127.0.0.1:5180 works
+
+[PASS] Login as OWNER successful
+Evidence:
+Status: 200, Body: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJPV05FUiIsImV4cCI6MTc5MTIwODI5MSwidHlwZSI6ImFjY2VzcyJ9.P6J0qz53AGFLV4OsCoxLUYQMJ510syp2A_VD4zJTl68","refresh_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJPV05FUiIsImV4cCI6MTc5MTgxMjE5MSwidHlwZSI6InJlZnJlc2gifQ.WnZi8xrOX0SJjRt4qNnnb_OCDLLezq96QWYLmikgmYI","token_type":"bearer","expires_in":900}
+
+[PASS] Login as VIEWER successful
+Evidence:
+Status: 200
+
+[FAIL] VIEWER cannot call POST /cycles/run
+Evidence:
+Status: 429, Body: {"error":{"code":"RATE_LIMITED","message":"Rate limit exceeded","request_id":"2026-10-05T13:36:45.134284+00:00"}}
+
+[PASS] Login as VIEWER successful
+Evidence:
+Status: 200
+
+[PASS] Rate limit 1/min on /cycles/run
+Evidence:
+Status: 429
+
+[FAIL] VIEWER cannot call POST /cycles/run
+Evidence:
+Status: 429, Body: {"error":{"code":"RATE_LIMITED","message":"Rate limit exceeded","request_id":"2026-10-05T13:36:48.289850+00:00"}}
+
+[PASS] Rate limit 1/min on /cycles/run
+Evidence:
+Status: 429
+
+[FAIL] Lockout after 5 failed logins
+Evidence:
+Status: 401, Body: {"detail":"Invalid credentials"}
+
+[PASS] CORS allowlist restricts evil.com
+Evidence:
+Headers: {'date': 'Mon, 05 Oct 2026 13:36:54 GMT', 'server': 'uvicorn', 'vary': 'Origin, Access-Control-Request-Method, Access-Control-Request-Headers, Access-Control-Request-Private-Network', 'access-control-allow-methods': 'GET, POST, PATCH, DELETE', 'access-control-max-age': '600', 'access-control-allow-credentials': 'true', 'content-length': '22', 'content-type': 'text/plain; charset=utf-8'}
+
+[FAIL] Lockout after 5 failed logins
+Evidence:
+Status: 401, Body: {"detail":"Invalid credentials"}
+
+[PASS] CORS allowlist restricts evil.com
+Evidence:
+Headers: {'date': 'Mon, 05 Oct 2026 13:37:26 GMT', 'server': 'uvicorn', 'vary': 'Origin, Access-Control-Request-Method, Access-Control-Request-Headers, Access-Control-Request-Private-Network', 'access-control-allow-methods': 'GET, POST, PATCH, DELETE', 'access-control-max-age': '600', 'access-control-allow-credentials': 'true', 'content-length': '22', 'content-type': 'text/plain; charset=utf-8'}
+
+[FAIL] Error envelope with request_id
+Evidence:
+Body: {"detail":[{"type":"int_parsing","loc":["query","limit"],"msg":"Input should be a valid integer, unable to parse string as an integer","input":"bad_limit"}]}
+
+[PASS] No stack traces
+Evidence:
+Body: {"detail":[{"type":"int_parsing","loc":["query","limit"],"msg":"Input should be a valid integer, unable to parse string as an integer","input":"bad_limit"}]}
+
+d_limit"}]}
+
+[PASS] No stack traces
+Evidence:
+Body: {"detail":[{"type":"int_parsing","loc":["query","limit"],"msg":"Input should be a valid integer, unable to parse string as an integer","input":"bad_limit"}]}
+
+Counts: PASS=7 FAIL=3
+Counts: PASS=7 FAIL=3

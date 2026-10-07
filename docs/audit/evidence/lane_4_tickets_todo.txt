@@ -1,0 +1,9 @@
+Evidence for Missing AI Guardrail Features
+Extracted from Feature_Tickets.md:
+
+| J-044 | Jarvis supervisor | P0 | 4 | J-043 | Scoring + hard gates (AI_Guardrails §4); NO_TRADE reason codes; valid `Signal` | TODO |
+| J-045 | Rationale generator (LLM + fallback) | P1 | 4 | J-044 | Schema-bound; number-hallucination check; template fallback | TODO |
+| J-080 | Guardrail test suite | P0 | 8 | J-045,J-051 | All tests in AI_Guardrails §12 green | TODO |
+| J-081 | Degraded-mode integration tests | P0 | 8 | J-043 | Each agent forced to fail -> correct fallback/NO_TRADE | TODO |
+
+As shown above, the tickets responsible for implementing the AI guardrails and their corresponding tests are marked as TODO. No `test_guardrails.py` file or related test cases were found in the codebase.

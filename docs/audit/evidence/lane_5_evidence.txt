@@ -1,0 +1,126 @@
+============================================================
+  XAUUSD (Iron Man)
+============================================================
+  XAUUSD M5: loaded 1000 candles
+  XAUUSD M15: loaded 1000 candles
+  XAUUSD H1: loaded 1000 candles
+  XAUUSD H4: loaded 1000 candles
+  XAUUSD D1: loaded 1000 candles
+  Analysis time: 2026-10-02 23:55:00+00:00
+  Trend M15: DOWN
+  Trend H1:  DOWN
+  ATR M15:   8.0285
+  ATR H1:    19.3795
+  Vol regime: NORMAL
+  Session:    UNKNOWN
+  Tick: bid=4148.88, ask=4149.26, spread=38pts
+  hawkeye: 1 candidate(s)
+    SELL entry=4151.20000 sl=4167.88540 tp=4117.82921 conf=0.95
+      evidence: bearish FVG 4147.000-4155.400; resistance near 4142.360
+  black_widow: 1 candidate(s)
+    BUY entry=4142.28000 sl=4135.83000 tp=4155.18000 conf=0.74
+      evidence: bullish pullback to EMA 4145.74; recovery candle close 4142.28
+  falcon: 0 candidates
+  ant_man: 0 candidates
+  wasp: 0 candidates
+
+  Risk Assessment (War Machine) on 2 candidates:
+  hawkeye/SELL: VALID rr=2.00 sl_atr=2.08 spread_ok=True lot=0.05
+  black_widow/BUY: VALID rr=2.00 sl_atr=0.80 spread_ok=True lot=0.15
+
+============================================================
+  XAGUSD (Captain America)
+============================================================
+  XAGUSD M5: loaded 1000 candles
+  XAGUSD M15: loaded 1000 candles
+  XAGUSD H1: loaded 1000 candles
+  XAGUSD H4: loaded 1000 candles
+  XAGUSD D1: loaded 1000 candles
+  Analysis time: 2026-10-02 23:00:00+00:00
+  Trend M15: DOWN
+  Trend H1:  DOWN
+  ATR M15:   0.1656
+  ATR H1:    0.4869
+  Vol regime: LOW
+  Session:    UNKNOWN
+  Tick: bid=61.347, ask=61.402, spread=55pts
+  hawkeye: 1 candidate(s)
+    SELL entry=65.32950 sl=65.58874 tp=64.81103 conf=0.90
+      evidence: bearish FVG 65.316-65.343; resistance near 65.265
+
+  Risk Assessment (War Machine) on 1 candidates:
+  hawkeye/SELL: VALID rr=2.00 sl_atr=1.57 spread_ok=True lot=0.07
+
+============================================================
+  BTCUSD (Thor)
+============================================================
+  BTCUSD M5: loaded 1000 candles
+  BTCUSD M15: loaded 1000 candles
+  BTCUSD H1: loaded 1000 candles
+  BTCUSD H4: loaded 1000 candles
+  BTCUSD D1: loaded 1000 candles
+  Analysis time: 2026-10-02 23:55:00+00:00
+  Trend M15: DOWN
+  Trend H1:  DOWN
+  ATR M15:   286.1805
+  ATR H1:    577.4455
+  Vol regime: NORMAL
+  Session:    UNKNOWN
+  Tick: bid=85998.12, ask=86018.77, spread=2065pts
+  hawkeye: 1 candidate(s)
+    SELL entry=84420.67500 sl=84983.71603 tp=83294.59294 conf=0.95
+      evidence: bearish FVG 84292.310-84549.040; resistance near 84466.560
+
+  Risk Assessment (War Machine) on 1 candidates:
+  hawkeye/SELL: INVALID rr=2.00 sl_atr=1.97 spread_ok=False lot=0.17
+    issues: ['spread exceeds maximum']
+
+============================================================
+  ETHUSD (Hulk)
+============================================================
+  ETHUSD M15: loaded 1000 candles
+  ETHUSD H1: loaded 1000 candles
+  ETHUSD H4: loaded 1000 candles
+  ETHUSD D1: loaded 1000 candles
+  Analysis time: 2026-10-02 23:00:00+00:00
+  Trend M15: UP
+  Trend H1:  DOWN
+  ATR M15:   14.7742
+  ATR H1:    21.0191
+  Vol regime: NORMAL
+  Session:    UNKNOWN
+  Tick: bid=2717.08, ask=2717.63, spread=55pts
+  hawkeye: 1 candidate(s)
+    BUY entry=2709.53000 sl=2681.58852 tp=2765.41296 conf=0.95
+      evidence: bullish FVG 2704.280-2714.780; support near 2711.880
+
+  Risk Assessment (War Machine) on 1 candidates:
+  hawkeye/BUY: VALID rr=2.00 sl_atr=1.89 spread_ok=True lot=3.57
+
+============================================================
+  USOUSD (Black Panther)
+============================================================
+  USOUSD M5: loaded 1000 candles
+  USOUSD M15: loaded 1000 candles
+  USOUSD H1: loaded 1000 candles
+  USOUSD H4: loaded 1000 candles
+  USOUSD D1: loaded 1000 candles
+  Analysis time: 2026-10-02 23:00:00+00:00
+  Trend M15: UP
+  Trend H1:  DOWN
+  ATR M15:   0.3920
+  ATR H1:    0.9469
+  Vol regime: NORMAL
+  Session:    UNKNOWN
+  Tick: bid=91.279, ask=91.355, spread=76pts
+  hawkeye: 1 candidate(s)
+    BUY entry=94.58550 sl=93.98904 tp=95.77842 conf=0.95
+      evidence: bullish FVG 94.570-94.601; support near 94.955
+  black_widow: 1 candidate(s)
+    SELL entry=94.96200 sl=95.13700 tp=94.61200 conf=0.62
+      evidence: bearish pullback to EMA 94.24; recovery candle close 94.96
+
+  Risk Assessment (War Machine) on 2 candidates:
+  hawkeye/BUY: VALID rr=2.00 sl_atr=1.52 spread_ok=True lot=1.67
+  black_widow/SELL: INVALID rr=2.00 sl_atr=0.45 spread_ok=True lot=5.71
+    issues: ['stop distance outside ATR bounds']

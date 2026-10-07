@@ -1,0 +1,12 @@
+### Evidence for Audit Lane 9
+
+- `pyproject.toml` lacks `jarvis` under `[project.scripts]`.
+- `.env.example` content is just:
+```
+ANTHROPIC_API_KEY=
+```
+- No `README.md` exists in root.
+- No `.github/workflows` directory exists (PowerShell returned `Cannot find path`).
+- `src/jarvis` directory contents lack `cli.py` or similar command entrypoint. Only: `['agents', 'api', 'config', 'data', 'db', 'graph', 'indicators', 'schemas', 'strategies', 'utils', '__init__.py', '__pycache__']`
+- `scripts/` contains: `fetch_real_fixtures.py`, `run_live_cycle.py`, `run_strategies_real.py`, `seed_db.py`, `start_api.py`, `test_api_lane7.py`. No backup or CLI script.
+- `main.py` explicitly mounts `/api/v1/health`.
