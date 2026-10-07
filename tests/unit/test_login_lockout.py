@@ -11,7 +11,9 @@ def test_login_lockout():
     
     # 5 failed attempts should return 401
     for _ in range(5):
-        response = client.post("/api/v1/auth/login", json={"username": username, "password": password})
+        response = client.post(
+            "/api/v1/auth/login", json={"username": username, "password": password}
+        )
         assert response.status_code == 401
         
     # The 6th attempt should be blocked by rate limit 429

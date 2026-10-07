@@ -1,5 +1,6 @@
 """Cycles routes."""
 from datetime import UTC, datetime
+from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from sqlmodel import Session
@@ -7,9 +8,21 @@ from sqlmodel import Session
 from jarvis.api.auth import UserInDB, require_owner
 from jarvis.api.schemas import CycleRunRequest, CycleRunResponse
 from jarvis.api.sse import broadcast_cycle_status, broadcast_signal_created
+from jarvis.config import (
+    load_instruments,
+    load_jarvis,
+    load_risk,
+    load_sessions,
+    load_strategies,
+)
+from jarvis.config.models import DoctorStrangeSettings
+from jarvis.data.mt5_provider import MT5Provider
 from jarvis.db.repositories import cycles as cycles_repo
 from jarvis.db.session import DEFAULT_DB_PATH, make_engine
+from jarvis.db.store import SignalStore
 from jarvis.graph.main_graph import build_main_graph
+from jarvis.graph.state import JarvisState
+from jarvis.strategies import default_strategy_registry
 
 router = APIRouter(prefix="/cycles", tags=["cycles"])
 
@@ -29,8 +42,46 @@ async def run_cycle_background(cycle_id: str, config_hash: str, config_text: str
 
     try:
         # Build and run the graph
-        graph = build_main_graph()
-        initial_state = {
+        instruments_config = load_instruments()
+        strategies_config = load_strategies()
+        jarvis_config = load_jarvis()
+        risk_settings = load_risk()
+        sessions_config = load_sessions()
+
+        doctor_settings = DoctorStrangeSettings(
+            primary_timeframe="M15",
+            ema_period=50,
+            atr_period=14,
+            volatility_window=100,
+            low_volatility_percentile=0.25,
+            high_volatility_percentile=0.75,
+            swing_left=5,
+            swing_right=5,
+            zone_tolerance=0.5,
+        )
+
+        registry = default_strategy_registry()
+
+        cache_dir = Path("data") / "mt5_cache"
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        provider = MT5Provider(cache_dir=cache_dir)
+        store = SignalStore(
+            db_path=DEFAULT_DB_PATH, instruments=instruments_config.instruments
+        )
+
+        graph = build_main_graph(
+            instruments_config=instruments_config,
+            strategies_config=strategies_config,
+            jarvis_config=jarvis_config,
+            doctor_settings=doctor_settings,
+            risk_settings=risk_settings,
+            sessions_config=sessions_config,
+            registry=registry,
+            provider=provider,
+            store=store,
+        ).compile()
+
+        initial_state: JarvisState = {
             "cycle_id": cycle_id,
             "now": datetime.now(UTC),
             "news": [],
@@ -69,7 +120,7 @@ async def trigger_cycle(
     request: CycleRunRequest,
     background_tasks: BackgroundTasks,
     current_user: UserInDB = Depends(require_owner),  # noqa: B008
-):
+) -> CycleRunResponse:
     """Trigger a manual cycle run (OWNER only, rate-limited 1/min)."""
     import uuid
     cycle_id = f"cycle_{int(datetime.now(UTC).timestamp() * 1000)}_{uuid.uuid4().hex[:8]}"
@@ -89,7 +140,7 @@ async def trigger_cycle(
 async def get_cycle(
     cycle_id: str,
     current_user: UserInDB = Depends(require_owner),  # noqa: B008
-):
+) -> dict[str, str | int | None]:
     """Get cycle details."""
     engine = make_engine()
     with Session(engine) as session:
@@ -108,11 +159,11 @@ async def get_cycle(
     }
 
 
-@router.get("", response_model=list[dict])
+@router.get("", response_model=list[dict[str, str | int | None]])
 async def list_cycles(
     limit: int = Query(100, ge=1, le=500),
     current_user: UserInDB = Depends(require_owner),  # noqa: B008
-):
+) -> list[dict[str, str | int | None]]:
     """List recent cycles."""
     engine = make_engine()
     with Session(engine) as session:

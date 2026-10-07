@@ -1,5 +1,6 @@
 """Health and root routes."""
 import traceback
+from typing import Literal
 
 from fastapi import APIRouter
 from sqlmodel import text
@@ -11,9 +12,9 @@ router = APIRouter(tags=["health"])
 
 
 @router.get("/health", response_model=HealthResponse)
-async def health_check():
+async def health_check() -> HealthResponse:
     """Liveness + adapter health check."""
-    db_status = "unhealthy"
+    db_status: Literal["healthy", "degraded", "unhealthy"] = "unhealthy"
     try:
         engine = make_engine()
         with engine.connect() as conn:
@@ -22,13 +23,14 @@ async def health_check():
     except Exception:
         traceback.print_exc()
 
-    adapters: dict[str, str] = {
+    adapters: dict[str, Literal["healthy", "degraded", "unhealthy", "unknown"]] = {
         "database": db_status,
         "mt5": "unknown",
         "anthropic": "unknown",
         "timesfm": "unknown",
     }
 
-    overall = "healthy" if all(v == "healthy" for v in adapters.values()) else "degraded"
+    all_healthy = all(v == "healthy" for v in adapters.values())
+    overall: Literal["healthy", "degraded", "unhealthy"] = "healthy" if all_healthy else "degraded"
 
     return HealthResponse(status=overall, adapters=adapters)

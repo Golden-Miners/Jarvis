@@ -3,8 +3,6 @@ from datetime import UTC, datetime, time, timedelta
 
 import pytest
 
-pytestmark = pytest.mark.slow
-
 from jarvis.config.models import (
     DoctorStrangeSettings,
     InstrumentConfig,
@@ -20,6 +18,8 @@ from jarvis.graph.main_graph import build_main_graph
 from jarvis.graph.state import JarvisState
 from jarvis.schemas import Candle, SymbolInfo, Tick
 from jarvis.strategies import default_strategy_registry
+
+pytestmark = pytest.mark.slow
 
 
 def test_main_graph_integration() -> None:

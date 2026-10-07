@@ -128,7 +128,7 @@ def test_signal_unique_open_per_symbol_direction(test_db):
 
 def test_db_pragmas(test_db):
     # Verify WAL and foreign_keys
-    wal = test_db.execute(astext("PRAGMA journal_mode")).scalar()
+    test_db.execute(astext("PRAGMA journal_mode")).scalar()
     # Memory DB defaults to memory journal mode, so we test foreign_keys
     fk = test_db.execute(astext("PRAGMA foreign_keys")).scalar()
     assert fk == 1

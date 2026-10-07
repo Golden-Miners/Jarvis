@@ -1,10 +1,10 @@
 """Stats routes."""
 
 from fastapi import APIRouter, Depends
-from sqlmodel import Session, select
+from sqlmodel import Session, col, select
 
 from jarvis.api.auth import UserInDB, require_viewer
-from jarvis.api.schemas import StatsByInstrument, StatsResponse
+from jarvis.api.schemas import StatsByInstrument, StatsByStrategy, StatsResponse
 from jarvis.db.models import OutcomeModel, SignalModel
 from jarvis.db.session import make_engine
 
@@ -16,14 +16,14 @@ async def get_stats(
     symbol: str | None = None,
     strategy: str | None = None,
     current_user: UserInDB = Depends(require_viewer),  # noqa: B008
-):
+) -> StatsResponse:
     """Get win rate, avg R:R, expectancy by strategy and instrument."""
     engine = make_engine()
     with Session(engine) as session:
         # Base query: signals with outcomes
         base_stmt = (
             select(SignalModel, OutcomeModel)
-            .join(OutcomeModel, SignalModel.id == OutcomeModel.signal_id)
+            .join(OutcomeModel, col(SignalModel.id) == col(OutcomeModel.signal_id))
             .where(SignalModel.decision == "TRADE")
         )
         if symbol:
@@ -55,7 +55,7 @@ async def get_stats(
         expectancy = (win_rate * avg_rr) - (1 - win_rate) if avg_rr > 0 else 0.0
 
         # By instrument
-        by_inst = {}
+        by_inst: dict[str, dict[str, int | float]] = {}
         for s, o in results:
             key = s.symbol
             if key not in by_inst:
@@ -67,19 +67,19 @@ async def get_stats(
             elif o.result == "SL_HIT":
                 by_inst[key]["losses"] += 1
 
-        by_instrument = {}
+        by_instrument: dict[str, StatsByInstrument] = {}
         for sym, data in by_inst.items():
             total_closed = data["wins"] + data["losses"]
             wr = data["wins"] / total_closed if total_closed > 0 else 0.0
             by_instrument[sym] = StatsByInstrument(
                 win_rate=wr,
                 avg_rr=data["rr_sum"] / data["total"] if data["total"] > 0 else 0.0,
-                count=data["total"],
+                count=int(data["total"]),
             )
 
         # By strategy - would need to join with setup_candidates
         # Placeholder for now
-        by_strategy = {}
+        by_strategy: dict[str, StatsByStrategy] = {}
 
         return StatsResponse(
             total_signals=total,

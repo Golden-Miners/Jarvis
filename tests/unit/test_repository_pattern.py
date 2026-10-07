@@ -3,7 +3,8 @@ from pathlib import Path
 
 
 def test_no_agent_imports_db_session():
-    """Verify that no module in src/jarvis/agents/ imports sqlmodel.Session or sqlalchemy.orm.Session."""
+    """Verify that no module in src/jarvis/agents/ imports sqlmodel.Session
+    or sqlalchemy.orm.Session."""
     agents_dir = Path("src/jarvis/agents")
     violations = []
 
@@ -22,4 +23,6 @@ def test_no_agent_imports_db_session():
                     if alias.name in ("sqlmodel", "sqlalchemy", "jarvis.db.session"):
                         violations.append(f"{py_file}: import {alias.name}")
 
-    assert not violations, "Repository pattern violated! Agents must not import Session/engine directly:\\n" + "\\n".join(violations)
+    msg = "Repository pattern violated! Agents must not import Session/engine directly:\\n"
+    msg += "\\n".join(violations)
+    assert not violations, msg

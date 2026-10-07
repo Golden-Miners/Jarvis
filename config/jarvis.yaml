@@ -1,7 +1,7 @@
 # PROVISIONAL — replace with validated values
 min_score: 1.0
 minimum_rr: 1.5
-min_agreeing_strategies: 1
+min_agreeing_strategies: 2
 risk_percent: 1.0
 cycle_interval_seconds: 900
 w_strategy: 1.0

@@ -1,7 +1,9 @@
 """News routes."""
 
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, Query
-from sqlmodel import Session, select
+from sqlmodel import Session, col, desc, select
 
 from jarvis.api.auth import UserInDB, require_viewer
 from jarvis.api.schemas import (
@@ -22,15 +24,15 @@ async def list_news(
     cursor: str | None = None,
     symbol: str | None = None,
     current_user: UserInDB = Depends(require_viewer),  # noqa: B008
-):
+) -> NewsListResponse:
     """List news items with impacts."""
     engine = make_engine()
     with Session(engine) as session:
         # Get news items with their impacts
         stmt = select(NewsItemModel)
         if cursor:
-            stmt = stmt.where(NewsItemModel.fetched_at < cursor)
-        stmt = stmt.order_by(NewsItemModel.fetched_at.desc()).limit(limit + 1)
+            stmt = stmt.where(NewsItemModel.fetched_at < datetime.fromisoformat(cursor))
+        stmt = stmt.order_by(desc(col(NewsItemModel.fetched_at))).limit(limit + 1)
         news_items = list(session.exec(stmt).all())
 
         has_more = len(news_items) > limit
@@ -56,8 +58,8 @@ async def list_news(
                     symbol=impact.symbol,
                     bias=impact.bias,  # type: ignore
                     impact=impact.impact,
-                    blackout_until=impact.blackout_until.isoformat()
-                        if impact.blackout_until else None,
+                    # blackout windows are carried by calendar_events, not news_impacts
+                    blackout_until=None,
                     published_at=item.published_at.isoformat() if item.published_at else "",
                     summary=impact.summary,
                 ))
@@ -70,15 +72,15 @@ async def news_for_symbol(
     symbol: str,
     limit: int = Query(50, ge=1, le=200),
     current_user: UserInDB = Depends(require_viewer),  # noqa: B008
-):
+) -> NewsListResponse:
     """Get news impacts for a specific symbol."""
     engine = make_engine()
     with Session(engine) as session:
         stmt = (
             select(NewsImpactModel, NewsItemModel)
-            .join(NewsItemModel, NewsImpactModel.news_item_id == NewsItemModel.id)
+            .join(NewsItemModel, col(NewsImpactModel.news_item_id) == col(NewsItemModel.id))
             .where(NewsImpactModel.symbol == symbol)
-            .order_by(NewsImpactModel.created_at.desc())
+            .order_by(desc(col(NewsImpactModel.created_at)))
             .limit(limit)
         )
         results = list(session.exec(stmt).all())
@@ -92,8 +94,8 @@ async def news_for_symbol(
                 symbol=impact.symbol,
                 bias=impact.bias,  # type: ignore
                 impact=impact.impact,
-                blackout_until=impact.blackout_until.isoformat()
-                    if impact.blackout_until else None,
+                # blackout windows are carried by calendar_events, not news_impacts
+                blackout_until=None,
                 published_at=item.published_at.isoformat() if item.published_at else "",
                 summary=impact.summary,
             ))
@@ -106,14 +108,14 @@ async def list_calendar_events(
     limit: int = Query(100, ge=1, le=500),
     cursor: str | None = None,
     current_user: UserInDB = Depends(require_viewer),  # noqa: B008
-):
+) -> CalendarListResponse:
     """List upcoming calendar events with blackout windows."""
     engine = make_engine()
     with Session(engine) as session:
         stmt = select(CalendarEventModel)
         if cursor:
-            stmt = stmt.where(CalendarEventModel.event_time < cursor)
-        stmt = stmt.order_by(CalendarEventModel.event_time.desc()).limit(limit + 1)
+            stmt = stmt.where(CalendarEventModel.event_time < datetime.fromisoformat(cursor))
+        stmt = stmt.order_by(desc(col(CalendarEventModel.event_time))).limit(limit + 1)
         events = list(session.exec(stmt).all())
 
         has_more = len(events) > limit

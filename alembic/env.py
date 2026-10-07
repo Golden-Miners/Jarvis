@@ -4,6 +4,7 @@ from pathlib import Path
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
+from sqlmodel import SQLModel
 
 # Add the src directory to sys.path so we can import jarvis
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
@@ -18,9 +19,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Import models for autogenerate support
-from sqlmodel import SQLModel
-
-from jarvis.db import models  # noqa: F401
+from jarvis.db import models  # noqa: F401, E402
 
 target_metadata = SQLModel.metadata
 

@@ -1,7 +1,7 @@
 """Auth routes."""
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel, ConfigDict, Field
 from sqlmodel import Session, select
 
@@ -48,7 +48,7 @@ failed_login_attempts: dict[str, list[datetime]] = {}
 async def login(
     request: LoginRequest,
     response: Response,
-):
+) -> TokenResponse:
     """Login with username/password, returns JWT tokens in cookies."""
     now = datetime.now(UTC)
     cutoff = now.timestamp() - (15 * 60)  # 15 minutes
@@ -113,12 +113,13 @@ async def login(
 
 @router.post("/refresh", response_model=TokenResponse)
 async def refresh(
+    request: Request,
     response: Response,
     refresh_token: str | None = None,
-):
+) -> TokenResponse:
     """Refresh access token using refresh token from cookie."""
     if not refresh_token:
-        refresh_token = response.cookies.get("refresh_token")
+        refresh_token = request.cookies.get("refresh_token")
     if not refresh_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -137,8 +138,8 @@ async def refresh(
     if not user or not user.active:
         raise HTTPException(status_code=401, detail="User not found or inactive")
 
-    access_token = create_access_token(user.username, user.role)  # type: ignore
-    new_refresh_token = create_refresh_token(user.username, user.role)  # type: ignore
+    access_token = create_access_token(user.username, user.role)
+    new_refresh_token = create_refresh_token(user.username, user.role)
 
     set_auth_cookies(response, access_token, new_refresh_token)
 
@@ -150,7 +151,7 @@ async def refresh(
 
 
 @router.post("/logout")
-async def logout(response: Response):
+async def logout(response: Response) -> dict[str, str]:
     """Logout and clear cookies."""
     from jarvis.api.auth import clear_auth_cookies
     clear_auth_cookies(response)
@@ -158,7 +159,7 @@ async def logout(response: Response):
 
 
 @router.get("/me", response_model=UserResponse)
-async def me(current_user: UserInDB = Depends(get_current_user)):  # noqa: B008
+async def me(current_user: UserInDB = Depends(get_current_user)) -> UserResponse:  # noqa: B008
     """Get current user info."""
     return UserResponse(
         id=current_user.id,
@@ -179,7 +180,7 @@ class CreateUserRequest(BaseModel):
 async def create_user(
     request: CreateUserRequest,
     current_user: UserInDB = Depends(get_current_user),  # noqa: B008
-):
+) -> UserResponse:
     """Create a new user (OWNER only)."""
     if current_user.role != "OWNER":
         raise HTTPException(status_code=403, detail="Only OWNER can create users")

@@ -1,14 +1,18 @@
-import asyncio, sys
+import asyncio
+import sys
+
 sys.path.insert(0, 'src')
+from datetime import UTC, datetime
+from pathlib import Path
+
 from jarvis.config import load_instruments, load_jarvis, load_risk, load_sessions, load_strategies
 from jarvis.config.models import DoctorStrangeSettings
 from jarvis.data.mt5_provider import MT5Provider
+from jarvis.db.session import DEFAULT_DB_PATH
 from jarvis.db.store import SignalStore
 from jarvis.graph.main_graph import build_main_graph
 from jarvis.strategies import default_strategy_registry
-from pathlib import Path
-from datetime import UTC, datetime
-from jarvis.db.session import DEFAULT_DB_PATH
+
 
 async def test():
     instruments_config = load_instruments()

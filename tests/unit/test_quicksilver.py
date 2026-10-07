@@ -6,8 +6,6 @@ from unittest.mock import MagicMock, patch
 import numpy as np
 import pytest
 
-pytestmark = pytest.mark.slow
-
 from jarvis.agents.quicksilver import (
     QuicksilverSettings,
     TimesFMSingleton,
@@ -15,6 +13,8 @@ from jarvis.agents.quicksilver import (
     run_quicksilver,
 )
 from jarvis.schemas import Candle
+
+pytestmark = pytest.mark.slow
 
 
 def _make_candles(n: int, base: float = 2000.0) -> list[Candle]:

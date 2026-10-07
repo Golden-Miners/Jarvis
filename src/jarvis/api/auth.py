@@ -1,4 +1,5 @@
 """Authentication and authorization for FastAPI backend."""
+from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
 from typing import Literal
 
@@ -160,7 +161,10 @@ def rate_limit_check(request: Request) -> None:
     request_counts.setdefault(client_ip, []).append(now)
 
 
-def require_role(*allowed_roles: Role):
+
+...
+
+def require_role(*allowed_roles: Role) -> Callable[[Request], UserInDB]:
     """Dependency factory for role-based access control."""
 
     def checker(request: Request, user: UserInDB = Depends(get_current_user)) -> UserInDB:  # noqa: B008

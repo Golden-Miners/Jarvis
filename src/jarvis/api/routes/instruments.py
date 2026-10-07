@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict
 from sqlmodel import Session, select
 
-from jarvis.api.auth import UserInDB, require_viewer
+from jarvis.api.auth import UserInDB, require_owner, require_viewer
 from jarvis.db.models import InstrumentModel
 from jarvis.db.repositories import signals as signals_repo
 from jarvis.db.session import make_engine
@@ -31,10 +31,15 @@ class LatestDecisionResponse(BaseModel):
     status: str | None = None
 
 
+class InstrumentUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    enabled: bool
+
+
 @router.get("", response_model=list[InstrumentConfigResponse])
 async def list_instruments(
     current_user: UserInDB = Depends(require_viewer),  # noqa: B008
-):
+) -> list[InstrumentConfigResponse]:
     """List all configured instruments."""
     engine = make_engine()
     with Session(engine) as session:
@@ -55,7 +60,7 @@ async def list_instruments(
 @router.get("/decisions", response_model=list[LatestDecisionResponse])
 async def latest_decisions(
     current_user: UserInDB = Depends(require_viewer),  # noqa: B008
-):
+) -> list[LatestDecisionResponse]:
     """Get latest decision for each instrument."""
     engine = make_engine()
     with Session(engine) as session:
@@ -79,21 +84,16 @@ async def latest_decisions(
 @router.patch("/{symbol}", response_model=InstrumentConfigResponse)
 async def update_instrument(
     symbol: str,
-    update: BaseModel,
-    current_user: UserInDB = Depends(  # noqa: B008
-        lambda u: u if u.role == "OWNER" else None
-    ),
-):
+    update: InstrumentUpdate,
+    current_user: UserInDB = Depends(require_owner),  # noqa: B008
+) -> InstrumentConfigResponse:
     """Enable/disable an instrument (OWNER only)."""
-    # The dependency injection will handle role check
     engine = make_engine()
     with Session(engine) as session:
         instrument = session.get(InstrumentModel, symbol)
         if not instrument:
             raise HTTPException(status_code=404, detail="Instrument not found")
-        # The update model validation happens at the route level
-        if hasattr(update, 'enabled'):
-            instrument.enabled = 1 if update.enabled else 0
+        instrument.enabled = 1 if update.enabled else 0
         session.commit()
         session.refresh(instrument)
         return InstrumentConfigResponse(

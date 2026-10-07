@@ -1,20 +1,20 @@
 """Structured logging configuration using structlog."""
 
+import contextvars
 import sys
 
 import structlog
 from structlog.types import EventDict, WrappedLogger
 
+# Module-level contextvar for cycle_id correlation
+cycle_id_var: contextvars.ContextVar[str | None] = contextvars.ContextVar("cycle_id", default=None)
+
 
 def add_cycle_id(logger: WrappedLogger, method_name: str, event_dict: EventDict) -> EventDict:
     """Add cycle_id from contextvars if available."""
-    try:
-        import contextvars
-        cycle_id = contextvars.copy_context().get("cycle_id", None)
-        if cycle_id:
-            event_dict["cycle_id"] = cycle_id
-    except Exception:
-        pass
+    cycle_id = cycle_id_var.get()
+    if cycle_id:
+        event_dict["cycle_id"] = cycle_id
     return event_dict
 
 
@@ -78,23 +78,17 @@ def configure_logging(
 
 def get_logger(name: str = "jarvis") -> structlog.BoundLogger:
     """Get a structured logger instance."""
-    return structlog.get_logger(name)
+    return structlog.get_logger(name)  # type: ignore[no-any-return]
 
 
 def set_cycle_id(cycle_id: str) -> None:
     """Set cycle_id in contextvars for correlation."""
-    import contextvars
-    ctx = contextvars.copy_context()
-    ctx.run(lambda: contextvars.ContextVar("cycle_id").set(cycle_id))
+    cycle_id_var.set(cycle_id)
 
 
 def clear_cycle_id() -> None:
     """Clear cycle_id from contextvars."""
-    import contextvars
-    try:
-        contextvars.ContextVar("cycle_id").set(None)
-    except Exception:
-        pass
+    cycle_id_var.set(None)
 
 
 # Configure on import with defaults

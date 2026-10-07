@@ -1,8 +1,9 @@
 """Signals routes."""
 from datetime import UTC, datetime
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlmodel import Session, select
+from sqlmodel import Session, col, select
 
 from jarvis.api.auth import UserInDB, require_viewer
 from jarvis.api.schemas import (
@@ -48,7 +49,7 @@ async def list_signals(
     status: str | None = None,
     decision: str | None = None,
     current_user: UserInDB = Depends(require_viewer),  # noqa: B008
-):
+) -> SignalListResponse:
     """List signals with filters and pagination."""
     engine = make_engine()
     with Session(engine) as session:
@@ -61,8 +62,9 @@ async def list_signals(
             stmt = stmt.where(SignalModel.decision == decision)
         if cursor:
             # Simple cursor-based pagination using created_at
-            stmt = stmt.where(SignalModel.created_at < cursor)
-        stmt = stmt.order_by(SignalModel.created_at.desc()).limit(limit + 1)
+            from datetime import datetime
+            stmt = stmt.where(SignalModel.created_at < datetime.fromisoformat(cursor))
+        stmt = stmt.order_by(col(SignalModel.created_at).desc()).limit(limit + 1)
         results = list(session.exec(stmt).all())
 
     has_more = len(results) > limit
@@ -82,7 +84,7 @@ async def list_signals(
 async def list_open_signals(
     symbol: str | None = None,
     current_user: UserInDB = Depends(require_viewer),  # noqa: B008
-):
+) -> SignalListResponse:
     """List all OPEN signals, optionally for one symbol."""
     engine = make_engine()
     with Session(engine) as session:
@@ -98,7 +100,7 @@ async def list_open_signals(
 async def get_signal(
     signal_id: str,
     current_user: UserInDB = Depends(require_viewer),  # noqa: B008
-):
+) -> SignalDetailResponse:
     """Get signal detail with verdicts, candidate, and risk."""
     engine = make_engine()
     with Session(engine) as session:
@@ -116,7 +118,7 @@ async def get_signal(
 
 
 # Internal function for graph to create signals
-async def create_signal(signal_data: dict, cycle_id: str) -> SignalModel:
+async def create_signal(signal_data: dict[str, Any], cycle_id: str) -> SignalModel:
     """Create a new signal (called from graph)."""
     engine = make_engine()
     with Session(engine) as session:

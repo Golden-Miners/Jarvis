@@ -1,15 +1,18 @@
 """FastAPI application for JARVIS."""
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Annotated
 
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from sqlmodel import Session, func, select
+from sqlmodel import Session, col, func, select
+from sse_starlette.sse import EventSourceResponse
 
-from jarvis.api.auth import require_viewer
+from jarvis.api.auth import UserInDB, require_viewer
 from jarvis.api.routes import agents, auth, cycles, health, instruments, news, signals, stats
 from jarvis.api.sse import sse_endpoint, sse_manager
 from jarvis.db.models import UserModel
@@ -17,13 +20,13 @@ from jarvis.db.session import make_engine
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # Startup
     print("Starting JARVIS API...")
     # Initialize default user if none exists
     engine = make_engine()
     with Session(engine) as session:
-        user_count = session.exec(select(func.count(UserModel.id))).first() or 0
+        user_count = session.exec(select(func.count(col(UserModel.id)))).first() or 0
         if user_count == 0:
             # Create default owner from env or use default
             import os
@@ -70,7 +73,7 @@ app.add_middleware(
 
 # Global exception handler
 @app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
+async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     import traceback
     request_id = datetime.now(UTC).isoformat().replace(":", "").replace("-", "")[:24]
     print(f"[{request_id}] Unhandled error: {exc}")
@@ -100,14 +103,16 @@ app.include_router(stats.router, prefix="/api/v1")
 
 # SSE endpoint
 @app.get("/api/v1/stream")
-async def sse_stream(request: Request, current_user=Depends(require_viewer)):  # noqa: B008
+async def sse_stream(
+    request: Request, current_user: Annotated[UserInDB, Depends(require_viewer)]
+) -> EventSourceResponse:
     """SSE endpoint for real-time updates."""
     return await sse_endpoint(request)
 
 
 # Dev: SSE test endpoint
 @app.post("/api/v1/dev/sse/test")
-async def sse_test(request: Request):
+async def sse_test(request: Request) -> dict[str, str]:
     """Test SSE broadcast."""
     data = await request.json()
     await sse_manager.broadcast(data.get("type", "test"), data.get("data", {}))
@@ -127,29 +132,21 @@ if web_dist.exists():
     app.mount("/icons.svg", StaticFiles(directory=web_dist), name="icons")
     
     # Catch-all route for SPA - serve index.html for non-API routes
-    @app.get("/{full_path:path}")
-    async def spa_catchall(full_path: str):
+    @app.get("/{full_path:path}", response_model=None)
+    async def spa_catchall(full_path: str) -> JSONResponse | FileResponse:
         print(f"[SPA] Request: {full_path}")
         # Only serve index.html for non-API paths
-        if full_path.startswith("api/") or full_path.startswith("docs") or full_path.startswith("redoc") or full_path.startswith("openapi"):
-            print(f"[SPA] API path, returning 404")
+        if (
+            full_path.startswith("api/")
+            or full_path.startswith("docs")
+            or full_path.startswith("redoc")
+            or full_path.startswith("openapi")
+        ):
+            print("[SPA] API path, returning 404")
             return JSONResponse(status_code=404, content={"detail": "Not found"})
         index_file = web_dist / "index.html"
         if index_file.exists():
-            print(f"[SPA] Serving index.html")
+            print("[SPA] Serving index.html")
             return FileResponse(index_file)
-        print(f"[SPA] Frontend not built")
+        print("[SPA] Frontend not built")
         return JSONResponse(status_code=404, content={"detail": "Frontend not built"})
-@app.get("/api/v1/stream")
-async def sse_stream(request: Request, current_user=Depends(require_viewer)):  # noqa: B008
-    """SSE endpoint for real-time updates."""
-    return await sse_endpoint(request)
-
-
-# Dev: SSE test endpoint
-@app.post("/api/v1/dev/sse/test")
-async def sse_test(request: Request):
-    """Test SSE broadcast."""
-    data = await request.json()
-    await sse_manager.broadcast(data.get("type", "test"), data.get("data", {}))
-    return {"status": "broadcast sent"}
