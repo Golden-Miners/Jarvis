@@ -3,6 +3,10 @@ from pathlib import Path
 from typing import Any
 
 from jarvis.schemas import Candle, SymbolInfo, Tick
+from jarvis.utils.retry import MT5_RETRY_CONFIG, retry_sync
+from jarvis.utils.logging import get_logger
+
+log = get_logger(__name__)
 
 TIMEFRAMES = {
     "M5": "TIMEFRAME_M5",
@@ -47,47 +51,59 @@ class MT5Provider:
         """Fetch closed candles, validate them, and refresh the parquet cache."""
         if n <= 0:
             raise ValueError("n must be positive")
-        mt5 = self._module()
-        timeframe_name = TIMEFRAMES.get(tf)
-        if timeframe_name is None:
-            raise ValueError(f"Unsupported timeframe: {tf}")
-        timeframe = getattr(mt5, timeframe_name)
-        rates = mt5.copy_rates_from_pos(broker_symbol or symbol, timeframe, 1, n)
-        if rates is None:
-            raise RuntimeError("copy_rates_from_pos failed")
-        candles = [self._candle_from_rate(rate) for rate in rates]
-        candles.sort(key=lambda candle: candle.timestamp)
-        self._validate_candles(candles)
-        self._update_cache(symbol, tf, candles)
-        return candles
+        
+        def _fetch() -> list[Candle]:
+            mt5 = self._module()
+            timeframe_name = TIMEFRAMES.get(tf)
+            if timeframe_name is None:
+                raise ValueError(f"Unsupported timeframe: {tf}")
+            timeframe = getattr(mt5, timeframe_name)
+            rates = mt5.copy_rates_from_pos(broker_symbol or symbol, timeframe, 1, n)
+            if rates is None:
+                raise RuntimeError("copy_rates_from_pos failed")
+            candles = [self._candle_from_rate(rate) for rate in rates]
+            candles.sort(key=lambda candle: candle.timestamp)
+            self._validate_candles(candles)
+            self._update_cache(symbol, tf, candles)
+            return candles
+        
+        return retry_sync(_fetch, **MT5_RETRY_CONFIG.__dict__)
 
     def get_symbol_info(self, symbol: str, broker_symbol: str | None = None) -> SymbolInfo:
         """Fetch read-only symbol metadata and map it to the shared schema."""
-        mt5 = self._module()
-        info = mt5.symbol_info(broker_symbol or symbol)
-        if info is None:
-            raise LookupError(f"symbol_info returned no metadata for {broker_symbol or symbol}")
-        return SymbolInfo(
-            symbol=symbol,
-            digits=info.digits,
-            point=info.point,
-            trade_tick_size=info.trade_tick_size,
-            trade_tick_value=info.trade_tick_value,
-            volume_min=info.volume_min,
-            volume_max=info.volume_max,
-            volume_step=info.volume_step,
-        )
+        
+        def _fetch() -> SymbolInfo:
+            mt5 = self._module()
+            info = mt5.symbol_info(broker_symbol or symbol)
+            if info is None:
+                raise LookupError(f"symbol_info returned no metadata for {broker_symbol or symbol}")
+            return SymbolInfo(
+                symbol=symbol,
+                digits=info.digits,
+                point=info.point,
+                trade_tick_size=info.trade_tick_size,
+                trade_tick_value=info.trade_tick_value,
+                volume_min=info.volume_min,
+                volume_max=info.volume_max,
+                volume_step=info.volume_step,
+            )
+        
+        return retry_sync(_fetch, **MT5_RETRY_CONFIG.__dict__)
 
     def get_tick(self, symbol: str, broker_symbol: str | None = None) -> Tick:
         """Fetch and map one read-only bid/ask tick."""
-        mt5 = self._module()
-        name = broker_symbol or symbol
-        tick = mt5.symbol_info_tick(name)
-        if tick is None:
-            raise LookupError(f"symbol_info_tick returned no tick for {name}")
-        return Tick(
-            timestamp=datetime.fromtimestamp(tick.time, UTC), bid=tick.bid, ask=tick.ask
-        )
+        
+        def _fetch() -> Tick:
+            mt5 = self._module()
+            name = broker_symbol or symbol
+            tick = mt5.symbol_info_tick(name)
+            if tick is None:
+                raise LookupError(f"symbol_info_tick returned no tick for {name}")
+            return Tick(
+                timestamp=datetime.fromtimestamp(tick.time, UTC), bid=tick.bid, ask=tick.ask
+            )
+        
+        return retry_sync(_fetch, **MT5_RETRY_CONFIG.__dict__)
 
     def _module(self) -> Any:
         if self._mt5 is None:

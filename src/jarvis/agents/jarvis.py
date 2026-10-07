@@ -15,6 +15,7 @@ from jarvis.guardrails import (
 )
 from jarvis.schemas import Direction, NewsImpact, SetupCandidate, Signal
 from jarvis.utils.logging import get_logger
+from jarvis.utils.retry import LLM_RETRY_CONFIG, retry_sync
 
 log = get_logger(__name__)
 
@@ -204,15 +205,30 @@ def _generate_rationale_with_guardrails(
 
     chain = prompt | llm.with_structured_output(RationaleOutput)
 
-    # First attempt
-    try:
-        result = chain.invoke({
-            "symbol": symbol,
-            "direction": direction,
-            "score": score,
-            "breakdown": score_breakdown,
-            "verdicts": agent_verdicts,
-        })
+    def _invoke_chain(repair_instruction: str | None = None) -> str:
+        """Invoke chain with optional repair instruction."""
+        if repair_instruction:
+            repair_prompt = ChatPromptTemplate.from_messages([
+                ("system", _RATIONALE_SYSTEM_PROMPT),
+                ("human", _RATIONALE_HUMAN_PROMPT + "\n\n{repair_instruction}"),
+            ])
+            repair_chain = repair_prompt | llm.with_structured_output(RationaleOutput)
+            result = repair_chain.invoke({
+                "symbol": symbol,
+                "direction": direction,
+                "score": score,
+                "breakdown": score_breakdown,
+                "verdicts": agent_verdicts,
+                "repair_instruction": repair_instruction,
+            })
+        else:
+            result = chain.invoke({
+                "symbol": symbol,
+                "direction": direction,
+                "score": score,
+                "breakdown": score_breakdown,
+                "verdicts": agent_verdicts,
+            })
 
         if isinstance(result, dict):
             rationale = str(result.get("rationale", ""))
@@ -228,6 +244,9 @@ def _generate_rationale_with_guardrails(
         validated = RationaleOutput(rationale=rationale)
         return validated.rationale
 
+    # First attempt with retry
+    try:
+        return retry_sync(_invoke_chain, **LLM_RETRY_CONFIG.__dict__)
     except ValidationError as e:
         log.warning(
             "jarvis_rationale_validation_failed",
@@ -244,44 +263,17 @@ def _generate_rationale_with_guardrails(
             attempt=1,
         )
 
-    # ONE bounded repair retry
-    repair_prompt = ChatPromptTemplate.from_messages([
-        ("system", _RATIONALE_SYSTEM_PROMPT),
-        ("human", _RATIONALE_HUMAN_PROMPT + "\n\n{repair_instruction}"),
-    ])
-
-    repair_chain = repair_prompt | llm.with_structured_output(RationaleOutput)
-
+    # ONE bounded repair retry with its own retry
+    repair_error_msg = (
+        "Schema validation failed - rationale must be 10-2000 chars, "
+        "not a placeholder"
+    )
     try:
-        repair_error_msg = (
-            "Schema validation failed - rationale must be 10-2000 chars, "
-            "not a placeholder"
+        return retry_sync(
+            _invoke_chain,
+            repair_error_msg,
+            **LLM_RETRY_CONFIG.__dict__
         )
-        result = repair_chain.invoke({
-            "symbol": symbol,
-            "direction": direction,
-            "score": score,
-            "breakdown": score_breakdown,
-            "verdicts": agent_verdicts,
-            "repair_instruction": _RATIONALE_REPAIR_PROMPT.format(
-                error=repair_error_msg,
-            ),
-        })
-
-        if isinstance(result, dict):
-            rationale = str(result.get("rationale", ""))
-        elif hasattr(result, "rationale"):
-            rationale = str(result.rationale)
-        else:
-            raise SchemaValidationError(
-                "Repair result missing 'rationale' field",
-                schema_name="RationaleOutput",
-            )
-
-        # Validate through Pydantic
-        validated = RationaleOutput(rationale=rationale)
-        return validated.rationale
-
     except ValidationError as e:
         log.error(
             "jarvis_rationale_repair_failed",

@@ -17,6 +17,7 @@ from jarvis.guardrails import (
 )
 from jarvis.schemas import NewsImpact
 from jarvis.utils.logging import get_logger
+from jarvis.utils.retry import NEWS_RETRY_CONFIG, retry_sync
 
 log = get_logger(__name__)
 
@@ -219,12 +220,11 @@ def run_fury(
     if settings is None:
         settings = FurySettings()
 
-    # 1. Fetch RSS
-    raw_news: list[str] = []
-    raw_entries: list[tuple[str, str]] = []  # (title, summary) for fallback
-    for url in settings.rss_urls:
-        try:
+    # 1. Fetch RSS with retry
+    def _fetch_rss(url: str) -> list[tuple[str, str]]:
+        def _parse() -> list[tuple[str, str]]:
             feed = feedparser.parse(url)
+            entries = []
             for entry in feed.entries[: settings.max_items_per_feed]:
                 title = getattr(entry, "title", "")
                 summary = getattr(
@@ -232,11 +232,20 @@ def run_fury(
                     getattr(entry, "description", ""),
                 )
                 if title:
-                    raw_news.append(
-                        f"Title: {title}\nSummary: {summary}",
-                    )
-                    raw_entries.append((title, summary))
+                    entries.append((title, summary))
+            return entries
+        return retry_sync(_parse, **NEWS_RETRY_CONFIG.__dict__)
+
+    raw_news: list[str] = []
+    raw_entries: list[tuple[str, str]] = []  # (title, summary) for fallback
+    for url in settings.rss_urls:
+        try:
+            entries = _fetch_rss(url)
+            for title, summary in entries:
+                raw_news.append(f"Title: {title}\nSummary: {summary}")
+                raw_entries.append((title, summary))
         except Exception:
+            log.warning("fury_rss_fetch_failed", url=url)
             continue
 
     if not raw_news:

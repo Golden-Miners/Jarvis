@@ -20,7 +20,7 @@ from jarvis.graph.state import JarvisState, SymbolState
 from jarvis.graph.wrapper import safe_node
 from jarvis.guardrails import check_kill_switch_before_cycle, get_kill_switch_status
 from jarvis.strategies.registry import StrategyRegistry
-from jarvis.utils.logging import get_logger
+from jarvis.utils.logging import get_logger, set_cycle_id
 
 log = get_logger(__name__)
 
@@ -88,6 +88,9 @@ def build_main_graph(
 
     @safe_node("Vision")
     def vision_node(state: JarvisState) -> dict[str, Any]:
+        # Set cycle_id for log correlation
+        set_cycle_id(state["cycle_id"])
+        
         timeframes = [doctor_settings.primary_timeframe, "H1", "H4", "D1"]
 
         res = run_vision(
