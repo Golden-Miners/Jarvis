@@ -96,6 +96,9 @@ class MT5Provider:
             except ImportError as exc:
                 raise RuntimeError("MetaTrader5 is required on Windows to use MT5Provider") from exc
             self._mt5 = MetaTrader5
+            # Ensure MT5 is initialized for internally loaded module
+            if not self._mt5.initialize():
+                raise ConnectionError(f"MetaTrader5 initialize failed: {self._mt5.last_error()}")
         return self._mt5
 
     @staticmethod

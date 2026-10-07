@@ -105,6 +105,7 @@ def test_signal_models_no_trade_without_price_fields() -> None:
         symbol="XAUUSD",
         decision="NO_TRADE",
         confidence=0.2,
+        score=0.2,
         score_breakdown={"strategy": 0.2},
         agent_verdicts={"hawkeye": "NO_SETUP"},
         rationale="No aligned setup.",

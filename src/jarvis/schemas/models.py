@@ -10,6 +10,9 @@ Bias = Literal["BULLISH", "BEARISH", "NEUTRAL"]
 VolatilityRegime = Literal["LOW", "NORMAL", "HIGH"]
 ForecastDirection = Literal["UP", "DOWN", "FLAT"]
 SignalStatus = Literal["OPEN", "TP_HIT", "SL_HIT", "EXPIRED", "SKIPPED"]
+OutcomeResult = Literal["TP_HIT", "SL_HIT", "EXPIRED"]
+CycleStatus = Literal["RUNNING", "COMPLETED", "DEGRADED", "FAILED"]
+CycleTrigger = Literal["SCHEDULED", "MANUAL"]
 
 
 class MarketStructure(BaseModel):
@@ -75,13 +78,25 @@ class Signal(BaseModel):
     sl: float | None = None
     tp: float | None = None
     rr: float | None = None
-    confidence: float = Field(ge=0.0)
+    confidence: float = Field(ge=0.0, le=1.0)
+    score: float = Field(ge=0.0)
     score_breakdown: dict[str, float]
     agent_verdicts: dict[str, str]
     rationale: str
     status: SignalStatus
     created_at: datetime
     expires_at: datetime
+
+
+class Outcome(BaseModel):
+    """Hypothetical result of a signal, resolved by Coulson."""
+
+    signal_id: str
+    result: OutcomeResult
+    resolved_at: datetime
+    r_multiple: float
+    max_favorable: float | None = None
+    max_adverse: float | None = None
 
 
 class Candle(BaseModel):

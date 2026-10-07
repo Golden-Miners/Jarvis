@@ -1,10 +1,13 @@
-import pytest
+import math
 from datetime import UTC, datetime
+
+import pytest
 
 from jarvis.agents.jarvis import run_jarvis
 from jarvis.config.models import JarvisConfig
 from jarvis.graph.state import SymbolState
-from jarvis.schemas import SetupCandidate, RiskAssessment, MarketStructure, Forecast, NewsImpact
+from jarvis.schemas import Forecast, MarketStructure, NewsImpact, RiskAssessment, SetupCandidate
+
 
 @pytest.fixture
 def mock_jarvis_config() -> JarvisConfig:
@@ -37,7 +40,10 @@ def test_run_jarvis_approves_trade(mock_jarvis_config: JarvisConfig) -> None:
     )
     
     # cid logic inside jarvis:
-    cid = f"{cand.symbol}:{cand.strategy}:{cand.created_at.isoformat()}:{cand.direction}:{cand.entry}:{cand.sl}:{cand.tp}"
+    cid = (
+        f"{cand.symbol}:{cand.strategy}:{cand.created_at.isoformat()}"
+        f":{cand.direction}:{cand.entry}:{cand.sl}:{cand.tp}"
+    )
     
     state: SymbolState = {
         "symbol": "XAUUSD",
@@ -101,5 +107,6 @@ def test_run_jarvis_approves_trade(mock_jarvis_config: JarvisConfig) -> None:
     assert signal is not None
     assert signal.decision == "TRADE"
     assert signal.direction == "BUY"
-    assert signal.confidence == 2.25
+    assert signal.score == pytest.approx(2.25)
+    assert signal.confidence == pytest.approx(1.0 - math.exp(-2.25))
     assert signal.rationale == "Signal approved based on confluence."

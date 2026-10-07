@@ -4,7 +4,13 @@ from typing import TypeVar
 import yaml  # type: ignore[import-untyped]
 from pydantic import BaseModel
 
-from jarvis.config.models import InstrumentsConfig, JarvisConfig, StrategiesConfig
+from jarvis.config.models import (
+    InstrumentsConfig,
+    JarvisConfig,
+    RiskSettings,
+    SessionsConfig,
+    StrategiesConfig,
+)
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
 DEFAULT_CONFIG_DIR = Path(__file__).resolve().parents[3] / "config"
@@ -36,3 +42,13 @@ def load_strategies(config_dir: Path | None = None) -> StrategiesConfig:
 def load_jarvis(config_dir: Path | None = None) -> JarvisConfig:
     """Load Jarvis configuration."""
     return load_yaml_config(JarvisConfig, "jarvis.yaml", config_dir)
+
+
+def load_risk(config_dir: Path | None = None) -> RiskSettings:
+    """Load risk configuration."""
+    return load_yaml_config(RiskSettings, "risk.yaml", config_dir)
+
+
+def load_sessions(config_dir: Path | None = None) -> SessionsConfig:
+    """Load session windows configuration."""
+    return load_yaml_config(SessionsConfig, "sessions.yaml", config_dir)

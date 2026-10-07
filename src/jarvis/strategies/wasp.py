@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from typing import Any
+
 from jarvis.indicators import atr, fibonacci_retracements, price_zones, swings
 from jarvis.schemas import Candle, SetupCandidate
 from jarvis.strategies.base import BaseStrategy

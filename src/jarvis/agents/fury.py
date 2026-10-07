@@ -1,4 +1,7 @@
+"""Nick Fury agent — news parsing and impact classification."""
+
 from datetime import datetime, timedelta
+from typing import Any
 
 import feedparser  # type: ignore
 from langchain_core.language_models import BaseChatModel
@@ -10,6 +13,7 @@ from jarvis.schemas import NewsImpact
 
 class FurySettings(BaseModel):
     """Configuration for Nick Fury."""
+
     rss_urls: list[str] = [
         "https://www.forexlive.com/feed/news",
     ]
@@ -18,15 +22,56 @@ class FurySettings(BaseModel):
 
 
 class NewsClassification(BaseModel):
-    symbol: str = Field(description="The trading instrument (e.g., XAUUSD, EURUSD) this news impacts. Must exactly match one of the requested symbols.")
+    """LLM-structured classification of a single news item."""
+
+    symbol: str = Field(
+        description=(
+            "The trading instrument this news impacts. "
+            "Must exactly match one of the requested symbols."
+        ),
+    )
     bias: str = Field(description="BULLISH, BEARISH, or NEUTRAL")
-    impact: int = Field(description="Impact score from 0 to 10, where 10 is market-shaking (NFP, FOMC) and 0 is irrelevant.")
-    is_high_impact_event: bool = Field(description="True if this is a major scheduled economic event like CPI, NFP, FOMC.")
-    summary: str = Field(description="A 1-sentence summary of the news and its potential impact.")
+    impact: int = Field(
+        description=(
+            "Impact score 0-10. "
+            "10 = market-shaking (NFP, FOMC), 0 = irrelevant."
+        ),
+    )
+    is_high_impact_event: bool = Field(
+        description=(
+            "True for major scheduled economic events "
+            "like CPI, NFP, FOMC."
+        ),
+    )
+    summary: str = Field(
+        description="One-sentence summary of the news impact.",
+    )
 
 
 class FuryOutput(BaseModel):
+    """Wrapper for structured LLM output."""
+
     classifications: list[NewsClassification]
+
+
+_SYSTEM_PROMPT = (
+    "You are an expert macro-economic news analyst. "
+    "You read recent news headlines and classify their impact "
+    "on specific trading instruments. "
+    "Only output classifications for the provided instruments. "
+    "Ignore irrelevant news."
+)
+
+
+def _build_blackout(
+    now: datetime,
+    is_high: bool,
+    minutes: int,
+) -> datetime | None:
+    """Return blackout deadline for high-impact events."""
+    if is_high:
+        return now + timedelta(minutes=minutes)
+    return None
 
 
 def run_fury(
@@ -35,85 +80,91 @@ def run_fury(
     settings: FurySettings,
     llm: BaseChatModel | None = None,
 ) -> dict[str, list[NewsImpact]]:
-    """Fetch global news, classify impact per instrument, and determine blackouts."""
-    
+    """Fetch global news, classify impact, determine blackouts."""
     # 1. Fetch RSS
-    raw_news = []
+    raw_news: list[str] = []
     for url in settings.rss_urls:
         try:
             feed = feedparser.parse(url)
-            for entry in feed.entries[:settings.max_items_per_feed]:
+            for entry in feed.entries[: settings.max_items_per_feed]:
                 title = getattr(entry, "title", "")
-                summary = getattr(entry, "summary", getattr(entry, "description", ""))
-                # Clean HTML or keep simple
+                summary = getattr(
+                    entry, "summary",
+                    getattr(entry, "description", ""),
+                )
                 if title:
-                    raw_news.append(f"Title: {title}\nSummary: {summary}")
+                    raw_news.append(
+                        f"Title: {title}\nSummary: {summary}",
+                    )
         except Exception:
-            # Silently skip failed feeds in production, or log them
             continue
-            
+
     if not raw_news:
         return {sym: [] for sym in symbols}
-        
-    combined_news = "\n---\n".join(raw_news[:20]) # Limit to top 20 to save context
-    
-    impacts: dict[str, list[NewsImpact]] = {sym: [] for sym in symbols}
-    
+
+    # Cap at 20 items to limit LLM context
+    combined_news = "\n---\n".join(raw_news[:20])
+    impacts: dict[str, list[NewsImpact]] = {
+        sym: [] for sym in symbols
+    }
+
     # 2. Classify using LLM
-    if llm is not None:
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are an expert macro-economic news analyst. You read recent news headlines and classify their impact on specific trading instruments. Only output classifications for the provided instruments. Ignore irrelevant news."),
-            ("human", "Target Instruments: {symbols}\n\nRecent News:\n{news}")
-        ])
-        try:
-            chain = prompt | llm.with_structured_output(FuryOutput)
-            result = chain.invoke({
-                "symbols": ", ".join(symbols),
-                "news": combined_news
-            })
-            
-            # Handle both dict and BaseModel returns from structured output
-            if isinstance(result, dict):
-                classifications = result.get("classifications", [])
-                for c in classifications:
-                    sym = c.get("symbol")
-                    if sym in symbols:
-                        bias = c.get("bias", "NEUTRAL")
-                        # map unknown bias to NEUTRAL
-                        if bias not in ["BULLISH", "BEARISH", "NEUTRAL"]:
-                            bias = "NEUTRAL"
-                            
-                        is_high = c.get("is_high_impact_event", False)
-                        blackout = now + timedelta(minutes=settings.high_impact_blackout_minutes) if is_high else None
-                        
-                        impact = NewsImpact(
-                            symbol=sym,
-                            bias=bias,
-                            impact=c.get("impact", 0),
-                            blackout_until=blackout,
-                            events=[], # We aren't mapping specific structured events yet
-                            summary=c.get("summary", "")
-                        )
-                        impacts[sym].append(impact)
-            elif hasattr(result, "classifications"):
-                for c in result.classifications:
-                    if c.symbol in symbols:
-                        bias = c.bias
-                        if bias not in ["BULLISH", "BEARISH", "NEUTRAL"]:
-                            bias = "NEUTRAL"
-                            
-                        blackout = now + timedelta(minutes=settings.high_impact_blackout_minutes) if c.is_high_impact_event else None
-                        
-                        impact = NewsImpact(
-                            symbol=c.symbol,
-                            bias=bias,
-                            impact=c.impact,
-                            blackout_until=blackout,
-                            events=[],
-                            summary=c.summary
-                        )
-                        impacts[c.symbol].append(impact)
-        except Exception:
-            pass # On LLM failure, we return empty impacts
-            
+    if llm is None:
+        return impacts
+
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", _SYSTEM_PROMPT),
+        (
+            "human",
+            "Target Instruments: {symbols}\n\n"
+            "Recent News:\n{news}",
+        ),
+    ])
+    try:
+        chain = prompt | llm.with_structured_output(FuryOutput)
+        result = chain.invoke({
+            "symbols": ", ".join(symbols),
+            "news": combined_news,
+        })
+
+        classifications: list[dict[str, Any] | NewsClassification] = []
+        if isinstance(result, dict):
+            classifications = result.get("classifications", [])
+        elif hasattr(result, "classifications"):
+            classifications = result.classifications
+
+        for c in classifications:
+            if isinstance(c, dict):
+                sym = c.get("symbol")
+                bias = c.get("bias", "NEUTRAL")
+                is_high = c.get("is_high_impact_event", False)
+                imp = c.get("impact", 0)
+                summ = c.get("summary", "")
+            else:
+                sym = c.symbol
+                bias = c.bias
+                is_high = c.is_high_impact_event
+                imp = c.impact
+                summ = c.summary
+
+            if sym not in symbols:
+                continue
+            if bias not in ("BULLISH", "BEARISH", "NEUTRAL"):
+                bias = "NEUTRAL"
+
+            blackout = _build_blackout(
+                now, is_high,
+                settings.high_impact_blackout_minutes,
+            )
+            impacts[sym].append(NewsImpact(
+                symbol=sym,
+                bias=bias,
+                impact=imp,
+                blackout_until=blackout,
+                events=[],
+                summary=summ,
+            ))
+    except Exception:
+        pass  # On LLM failure, return empty impacts
+
     return impacts

@@ -1,19 +1,20 @@
-from collections.abc import Callable
 from typing import Any
 
 from langgraph.constants import Send
 from langgraph.graph import END, START, StateGraph
-from langchain_core.runnables.config import RunnableConfig
 
+from jarvis.agents.coulson import run_coulson
 from jarvis.agents.vision import run_vision
 from jarvis.config.models import (
     DoctorStrangeSettings,
     InstrumentsConfig,
     JarvisConfig,
     RiskSettings,
+    SessionsConfig,
     StrategiesConfig,
 )
 from jarvis.data.provider import DataProvider
+from jarvis.db.store import SignalStore, config_hash
 from jarvis.graph.instrument_graph import build_instrument_subgraph
 from jarvis.graph.state import JarvisState, SymbolState
 from jarvis.graph.wrapper import safe_node
@@ -26,19 +27,28 @@ def build_main_graph(
     jarvis_config: JarvisConfig,
     doctor_settings: DoctorStrangeSettings,
     risk_settings: RiskSettings,
+    sessions_config: SessionsConfig,
     registry: StrategyRegistry,
     provider: DataProvider,
-) -> StateGraph[JarvisState]:
+    store: SignalStore | None = None,
+) -> StateGraph[JarvisState]: 
+    
+    # Build name -> SessionWindow mapping
+    session_map = {sw.name: sw for sw in sessions_config.session_windows}
     
     subgraphs = {}
     for instrument in instruments_config.instruments:
+        # Resolve session names to SessionWindow objects
+        instrument_sessions = [
+            session_map[name] for name in instrument.sessions if name in session_map
+        ]
         subgraph = build_instrument_subgraph(
             instrument=instrument,
             strategies_config=strategies_config,
             jarvis_config=jarvis_config,
             doctor_settings=doctor_settings,
             risk_settings=risk_settings,
-            session_windows=[],  # Session windows aren't configured yet
+            session_windows=instrument_sessions,
             registry=registry,
         )
         subgraphs[instrument.symbol] = subgraph.compile()
@@ -74,9 +84,11 @@ def build_main_graph(
 
     builder.add_node("vision", vision_node)
 
-    from jarvis.agents.fury import run_fury, FurySettings
-    from langchain_anthropic import ChatAnthropic
     import os
+
+    from langchain_anthropic import ChatAnthropic
+
+    from jarvis.agents.fury import FurySettings, run_fury
     
     @safe_node("NickFury")
     def nick_fury_node(state: JarvisState) -> dict[str, Any]:
@@ -126,7 +138,8 @@ def build_main_graph(
     builder.add_node("merge_instruments", merge_instruments)
     
     # Connect routing
-    builder.add_conditional_edges("nick_fury", route_to_instruments, [f"instrument_{s}" for s in subgraphs.keys()])
+    instrument_nodes = [f"instrument_{s}" for s in subgraphs.keys()]
+    builder.add_conditional_edges("nick_fury", route_to_instruments, instrument_nodes)
     
     for sym in subgraphs.keys():
         builder.add_edge(f"instrument_{sym}", "merge_instruments")
@@ -138,7 +151,7 @@ def build_main_graph(
         signals = []
         news = state.get("news", [])
         
-        for sym, sym_state in state.get("symbols", {}).items():
+        for _sym, sym_state in state.get("symbols", {}).items():
             # In a real run, llm could be injected via provider or config
             signal = run_jarvis(sym_state, news, jarvis_config, llm=None)
             if signal:
@@ -147,10 +160,26 @@ def build_main_graph(
         return {"signals": signals}
     
     builder.add_node("jarvis", jarvis_node)
-    
+
+    @safe_node("Coulson")
+    def coulson_node(state: JarvisState) -> dict[str, Any]:
+        if store is None:
+            return {}
+        ch = config_hash(instruments_config, strategies_config, jarvis_config)
+        return run_coulson(
+            state,
+            store,
+            doctor_settings.primary_timeframe,
+            trigger="MANUAL",
+            config_hash=ch,
+        )
+
+    builder.add_node("coulson", coulson_node)
+
     builder.add_edge(START, "vision")
     builder.add_edge("vision", "nick_fury")
     builder.add_edge("merge_instruments", "jarvis")
-    builder.add_edge("jarvis", END)
+    builder.add_edge("jarvis", "coulson")
+    builder.add_edge("coulson", END)
 
     return builder

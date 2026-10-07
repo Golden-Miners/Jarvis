@@ -1,3 +1,4 @@
+import math
 import uuid
 from datetime import UTC, datetime, timedelta
 
@@ -12,7 +13,11 @@ from jarvis.schemas import Direction, NewsImpact, SetupCandidate, Signal
 
 class RationaleOutput(BaseModel):
     rationale: str = Field(
-        description="A clear, human-readable paragraph explaining why this signal was approved or rejected, referencing structure, forecast, news, and strategy confluence."
+        description=(
+            "A clear, human-readable paragraph explaining why this signal "
+            "was approved or rejected, referencing structure, forecast, news, "
+            "and strategy confluence."
+        )
     )
 
 
@@ -67,8 +72,8 @@ def run_jarvis(
         
         # 1. Strategies
         strat_score = 0.0
-        # In reality we should use w_strategy from config and the specific weight from StrategiesConfig
-        # But we only have JarvisConfig here. Let's assume w_strategy is a multiplier.
+        # In reality we should use w_strategy from config and the specific
+        # weight from StrategiesConfig. But we only have JarvisConfig here.
         # Wait, JarvisConfig has w_strategy.
         for c in direction_candidates:
             val = c.confidence * config.w_strategy
@@ -119,7 +124,9 @@ def run_jarvis(
             score_breakdown["news"] = news_score
             
         # Check thresholds
-        if score >= config.min_score and len(direction_candidates) >= config.min_agreeing_strategies:
+        meets_min_score = score >= config.min_score
+        meets_min_agree = len(direction_candidates) >= config.min_agreeing_strategies
+        if meets_min_score and meets_min_agree:
             if score > best_score:
                 best_score = score
                 # Pick the highest confidence candidate for entry/sl/tp
@@ -131,8 +138,13 @@ def run_jarvis(
                 if llm is not None:
                     try:
                         prompt = ChatPromptTemplate.from_messages([
-                            ("system", "You are an expert trading supervisor. Provide a brief rationale for approving this trade."),
-                            ("human", "Symbol: {symbol}\nDirection: {direction}\nScore: {score}\nBreakdown: {breakdown}\nVerdicts: {verdicts}")
+                            ("system",
+                             "You are an expert trading supervisor. Provide a brief "
+                             "rationale for approving this trade."),
+                            ("human",
+                             "Symbol: {symbol}\nDirection: {direction}\n"
+                             "Score: {score}\nBreakdown: {breakdown}\n"
+                             "Verdicts: {verdicts}")
                         ])
                         chain = prompt | llm.with_structured_output(RationaleOutput)
                         result = chain.invoke({
@@ -149,6 +161,7 @@ def run_jarvis(
                     except Exception:
                         pass
                 
+                best_score_norm = 1.0 - math.exp(-best_score)
                 best_signal = Signal(
                     id=str(uuid.uuid4()),
                     symbol=symbol,
@@ -158,13 +171,15 @@ def run_jarvis(
                     sl=best_cand.sl,
                     tp=best_cand.tp,
                     rr=best_assessment.rr,
-                    confidence=best_score,
+                    score=best_score,
+                    confidence=best_score_norm,
                     score_breakdown=score_breakdown,
                     agent_verdicts=agent_verdicts,
                     rationale=rationale,
                     status="OPEN",
                     created_at=datetime.now(UTC),
-                    expires_at=datetime.now(UTC) + timedelta(seconds=config.cycle_interval_seconds * 4),
+                    expires_at=datetime.now(UTC)
+                    + timedelta(seconds=config.cycle_interval_seconds * 4),
                 )
                 
     if best_signal:

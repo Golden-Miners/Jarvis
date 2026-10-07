@@ -45,9 +45,12 @@ def run_strange(
     levels = sorted({point.price for point in pivots})
     regime = _volatility_regime(atr(primary, settings.atr_period), settings)
     session = _session_name(now.astimezone(UTC).time(), session_windows)
+    # Add primary trend key for Jarvis supervisor
+    trends_with_primary = dict(trends)
+    trends_with_primary["primary"] = trends[settings.primary_timeframe]
     return MarketStructure(
         symbol=instrument.symbol,
-        timeframe_trends=trends,
+        timeframe_trends=trends_with_primary,
         last_bos=_latest_break(breaks, "BOS"),
         last_choch=_latest_break(breaks, "CHOCH"),
         key_levels=levels,

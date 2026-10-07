@@ -1,21 +1,42 @@
+# PROVISIONAL — replace with validated values
 strategies:
   - name: hawkeye
     enabled: true
     weight: 1.0
-    params: {}
+    params:
+      fvg_min_size_atr: 0.3
+      ob_lookback: 50
+      require_fvg: true
+      require_ob: false
+
   - name: black_widow
     enabled: true
     weight: 1.0
-    params: {}
+    params:
+      ema_period: 50
+      pullback_bars: 5
+      entry_on_opposite_close: true
+
   - name: falcon
     enabled: true
     weight: 1.0
-    params: {}
+    params:
+      breakout_lookback: 20
+      atr_confidence_mult: 1.5
+      min_range_atr: 0.5
+
   - name: ant_man
     enabled: true
     weight: 1.0
-    params: {}
+    params:
+      ema_period: 50
+      overextension_mult: 2.0
+      regime_filter: "RANGE"
+
   - name: wasp
     enabled: true
     weight: 1.0
-    params: {}
+    params:
+      zone_lookback: 100
+      fib_anchor_lookback: 50
+      confluence_tolerance_atr: 0.5

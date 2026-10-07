@@ -1,0 +1,14 @@
+# PROVISIONAL — replace with broker-verified session hours (UTC)
+session_windows:
+  - name: LONDON
+    start_utc: "07:00"
+    end_utc: "16:00"
+  - name: NEW_YORK
+    start_utc: "12:00"
+    end_utc: "21:00"
+  - name: ASIAN
+    start_utc: "22:00"
+    end_utc: "07:00"
+  - name: CRYPTO_24_7
+    start_utc: "00:00"
+    end_utc: "23:59"

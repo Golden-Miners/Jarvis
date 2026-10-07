@@ -20,3 +20,24 @@ htmlcov/
 # Editors and local Claude configuration
 .vs/
 .claude/settings.local.json
+
+# Runtime data (SQLite WAL artifacts, parquet candles, model caches)
+data/
+*.db
+logs/
+models/
+
+# Frontend builds
+web/dist/
+
+# Local tool state and generated artifacts
+.archify/
+.kilo/
+.specify/
+graphify-out/
+.github/skills/
+alembic_temp.ini
+gitleaks_check.txt
+mock_out.txt
+/package.json
+/package-lock.json

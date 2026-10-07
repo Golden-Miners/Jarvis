@@ -6,6 +6,7 @@ from jarvis.schemas import (
     Forecast,
     MarketStructure,
     NewsImpact,
+    Outcome,
     RiskAssessment,
     SetupCandidate,
     Signal,
@@ -56,6 +57,7 @@ class JarvisState(TypedDict, total=False):
     cycle_id: str
     now: datetime
     news: list[NewsImpact]
-    symbols: dict[str, SymbolState]
+    symbols: Annotated[dict[str, SymbolState], merge_dict]
     signals: Annotated[list[Signal], merge_list]
+    outcomes: Annotated[list[Outcome], merge_list]
     errors: Annotated[list[AgentError], merge_list]

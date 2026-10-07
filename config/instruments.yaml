@@ -1,26 +1,56 @@
+# PROVISIONAL — replace with broker-verified values
 instruments:
   - symbol: XAUUSD
     broker_symbol: XAUUSD
     agent: iron_man
-    sessions: []
-    atr_multipliers: {}
+    sessions: ["LONDON", "NEW_YORK", "ASIAN"]
+    atr_multipliers:
+      hawkeye: 2.0
+      black_widow: 1.5
+      falcon: 1.5
+      ant_man: 1.0
+      wasp: 1.5
+
   - symbol: XAGUSD
     broker_symbol: XAGUSD
     agent: captain_america
-    sessions: []
-    atr_multipliers: {}
+    sessions: ["LONDON", "NEW_YORK", "ASIAN"]
+    atr_multipliers:
+      hawkeye: 2.0
+      black_widow: 1.5
+      falcon: 1.5
+      ant_man: 1.0
+      wasp: 1.5
+
   - symbol: BTCUSD
     broker_symbol: BTCUSD
     agent: thor
-    sessions: []
-    atr_multipliers: {}
+    sessions: ["CRYPTO_24_7"]
+    atr_multipliers:
+      hawkeye: 2.0
+      black_widow: 1.5
+      falcon: 1.5
+      ant_man: 1.0
+      wasp: 1.5
+
   - symbol: ETHUSD
     broker_symbol: ETHUSD
     agent: hulk
-    sessions: []
-    atr_multipliers: {}
+    sessions: ["CRYPTO_24_7"]
+    atr_multipliers:
+      hawkeye: 2.0
+      black_widow: 1.5
+      falcon: 1.5
+      ant_man: 1.0
+      wasp: 1.5
+
   - symbol: USOUSD
     broker_symbol: USOUSD
     agent: black_panther
-    sessions: []
-    atr_multipliers: {}
+    sessions: ["LONDON", "NEW_YORK"]
+    atr_multipliers:
+      hawkeye: 2.0
+      black_widow: 1.5
+      falcon: 1.5
+      ant_man: 1.0
+      wasp: 1.5

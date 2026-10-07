@@ -1,0 +1,4 @@
+# PROVISIONAL — replace with validated values
+minimum_sl_atr_multiple: 0.5
+maximum_sl_atr_multiple: 3.0
+maximum_spread_points: 1000.0

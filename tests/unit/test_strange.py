@@ -64,7 +64,7 @@ def test_run_strange_returns_mtf_trends_atr_levels_and_unknown_session() -> None
     )
 
     assert result.symbol == "XAUUSD"
-    assert result.timeframe_trends == {"M15": "UP", "H1": "DOWN"}
+    assert result.timeframe_trends == {"M15": "UP", "H1": "DOWN", "primary": "UP"}
     assert result.atr == {"M15": 2.0, "H1": 4.0}
     assert result.volatility_regime == "NORMAL"
     assert result.session == "UNKNOWN"

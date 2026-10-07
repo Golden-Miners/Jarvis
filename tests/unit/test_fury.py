@@ -1,7 +1,8 @@
-import pytest
 from datetime import UTC, datetime
 from unittest.mock import MagicMock, patch
-from jarvis.agents.fury import run_fury, FurySettings, FuryOutput, NewsClassification
+
+from jarvis.agents.fury import FuryOutput, FurySettings, NewsClassification, run_fury
+
 
 def test_run_fury_empty_feed() -> None:
     now = datetime.now(UTC)

@@ -1,4 +1,4 @@
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 from typing import Any
 
 from langchain_core.runnables.config import RunnableConfig
@@ -15,10 +15,10 @@ from jarvis.config.models import (
     StrategiesConfig,
 )
 from jarvis.graph.state import SymbolState
+from jarvis.graph.wrapper import safe_node
 from jarvis.schemas import SymbolInfo, Tick
 from jarvis.strategies.base import BaseStrategy
 from jarvis.strategies.context import StrategyContext
-from jarvis.graph.wrapper import safe_node
 from jarvis.strategies.registry import StrategyRegistry
 
 
@@ -61,7 +61,7 @@ def build_instrument_subgraph(
 
     @safe_node("Quicksilver")
     def quicksilver_node(state: SymbolState) -> dict[str, Any]:
-        from jarvis.agents.quicksilver import run_quicksilver, QuicksilverSettings
+        from jarvis.agents.quicksilver import QuicksilverSettings, run_quicksilver
         tf = doctor_settings.primary_timeframe
         candles_list = list(state["candles"].get(tf, []))
         ms = state.get("market_structure")

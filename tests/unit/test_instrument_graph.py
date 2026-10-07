@@ -1,10 +1,9 @@
 """Tests for the instrument subgraph (T4.2)."""
 
 from datetime import UTC, datetime, timedelta
-from typing import Any
 
-from langgraph.graph import StateGraph
 from langchain_core.runnables.config import RunnableConfig
+from langgraph.graph import StateGraph
 
 from jarvis.config.models import (
     DoctorStrangeSettings,
@@ -24,9 +23,15 @@ def test_build_instrument_subgraph() -> None:
     instrument = InstrumentConfig(
         symbol="XAUUSD", broker_symbol="XAUUSD", agent="iron_man", sessions=[], atr_multipliers={}
     )
-    strategies_config = StrategiesConfig(strategies=[StrategyConfig(name="hawkeye", weight=1.0, enabled=True, params={})])
+    strategies_config = StrategiesConfig(
+        strategies=[StrategyConfig(name="hawkeye", weight=1.0, enabled=True, params={})]
+    )
     jarvis_config = JarvisConfig(
-        risk_percent=1.0, minimum_rr=1.5, min_score=70.0, min_agreeing_strategies=1, cycle_interval_seconds=900
+        risk_percent=1.0,
+        minimum_rr=1.5,
+        min_score=70.0,
+        min_agreeing_strategies=1,
+        cycle_interval_seconds=900,
     )
     doctor_settings = DoctorStrangeSettings(
         primary_timeframe="M15",
@@ -80,7 +85,16 @@ def test_build_instrument_subgraph() -> None:
     config: RunnableConfig = {
         "configurable": {
             "tick": Tick(symbol="XAUUSD", bid=100.0, ask=100.1, timestamp=now, volume=1),
-            "symbol_info": SymbolInfo(symbol="XAUUSD", digits=2, point=0.01, trade_tick_size=0.01, trade_tick_value=1.0, volume_min=0.01, volume_max=100.0, volume_step=0.01),
+            "symbol_info": SymbolInfo(
+                symbol="XAUUSD",
+                digits=2,
+                point=0.01,
+                trade_tick_size=0.01,
+                trade_tick_value=1.0,
+                volume_min=0.01,
+                volume_max=100.0,
+                volume_step=0.01,
+            ),
             "account_equity": 10000.0,
         }
     }

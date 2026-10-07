@@ -49,6 +49,10 @@ class SessionWindow(ConfigModel):
     end_utc: time
 
 
+class SessionsConfig(ConfigModel):
+    session_windows: list[SessionWindow] = Field(min_length=1)
+
+
 class DoctorStrangeSettings(ConfigModel):
     primary_timeframe: str = Field(min_length=1)
     ema_period: int = Field(gt=0)
