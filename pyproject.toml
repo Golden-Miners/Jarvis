@@ -1,3 +1,7 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "jarvis"
 version = "0.1.0"
@@ -24,6 +28,13 @@ dependencies = [
 	"uvicorn>=0.54.0",
 	"structlog>=26.1.0",
 	"ml-dtypes>=0.6.0",
+	"alembic>=1.20.0",
+	"python-jose[cryptography]>=3.3.0",
+	"passlib[bcrypt]>=1.7.4",
+	"python-multipart>=0.0.9",
+	"sse-starlette>=2.1.0",
+	"bcrypt==4.2.1",
+	"argon2-cffi>=25.1.0",
 ]
 
 [dependency-groups]
@@ -31,7 +42,11 @@ dev = [
 	"mypy>=2.3.1",
 	"pytest>=9.1.1",
 	"pytest-cov>=7.1.0",
+	"pytest-randomly>=5.0.0",
+	"pytest-timeout>=2.3.1",
 	"ruff>=0.16.9",
+	"types-passlib>=1.7.7.20260211",
+	"types-python-jose>=3.5.0.20260408",
 ]
 
 [[tool.uv.index]]
@@ -45,7 +60,10 @@ torch = { index = "pytorch-cpu" }
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-addopts = "-ra"
+addopts = "-ra --timeout=20"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')"
+]
 
 [tool.ruff]
 line-length = 100
@@ -60,3 +78,7 @@ python_version = "3.12"
 strict = true
 mypy_path = "src"
 files = ["src/jarvis"]
+
+[project.scripts]
+jarvis-api = "jarvis.api.main:app"
+jarvis = "jarvis.cli:main"
